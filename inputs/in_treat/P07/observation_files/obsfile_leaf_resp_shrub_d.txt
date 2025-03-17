@@ -1,1 +1,0 @@
-year,doy,hour,mean,std

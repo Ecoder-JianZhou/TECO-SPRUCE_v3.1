@@ -12,7 +12,7 @@ module soil
         real(8) :: infilt_max, WILTPT_x, FLDCAP
         real(8) :: dwcl(10), evapl(10), wupl(10), srdt(10)!, depth(10)
         real(8) :: twtadd, wtadd, supply, demand, exchangeL
-        real(8) :: omegaL(10), Tsrdt, tr_allo, Tr_ratio(10), w_wsc(10)
+        real(8) :: omegaL(10), Tsrdt, tr_allo, Tr_ratio(10)!, w_wsc(10)
         real(8) :: phi, zmax, thetasmin, zthetasmin, az, zwt1,zwt2,zwt3, vtot
         real(8) :: fw(10), ome(10)
         integer :: i, ipft, nfr
@@ -130,7 +130,7 @@ module soil
         st%transp = 0.
         do ipft = 1, npft
             tr_allo = 0.0
-            ! w_wsc   = st%sp(ipft)%pft_weight
+            
             do i=1,nfr
                 tr_ratio(i) = st%sp(ipft)%frlen(i) * st%wsc(i) !*(wcl(i)-wiltpt)) !*THKSL(I))
                 tr_allo     = tr_allo + tr_ratio(i)
@@ -198,6 +198,236 @@ module soil
             st%omega  = st%omega  + ome(i)*st%FRLEN(i)
         enddo
     end subroutine soilwater 
+
+    subroutine soilwater_obs(st, iforcing)
+        ! All of inputs, the unit of water is 'mm', soil moisture or soil water content is a ratio
+        implicit none
+        type(site_data_type), intent(inout) :: st
+        type(forcing_data_type), intent(in) :: iforcing
+        real(8) :: infilt_max, WILTPT_x, FLDCAP
+        real(8) :: dwcl(10), evapl(10), wupl(10), srdt(10), depth_top(10)
+        real(8) :: twtadd, wtadd, supply, demand, exchangeL
+        real(8) :: omegaL(10), Tsrdt, tr_allo, Tr_ratio(10), w_wsc(10)
+        real(8) :: phi, zmax, thetasmin, zthetasmin, az, zwt1,zwt2,zwt3, vtot
+        real(8) :: fw(10), ome(10)
+        integer :: i, ipft, nfr
+
+        infilt_max = 15.
+        WILTPT_x   = st%wsmin/100.000
+        FLDCAP     = st%wsmax/100.000
+        do i = 1,10
+            dwcl(i)  = 0.0
+            evapl(i) = 0.0
+            wupl(i)  = 0.0
+            srdt(i)  = 0.0
+            st%depth(i) = 0.0
+            if (i>3) st%wcl(i) = FLDCAP    ! Jian: set underground 30cm to saturated.
+        enddo
+        st%depth(1) = st%thksl(1) ! Layer volume (cm3): Determine which layers are reached by the root system.
+        depth_top(1) = 0  ! Jian: mark for top depth for each layer
+        do i = 2, 10
+            st%depth(i) = st%depth(i-1) + st%thksl(i)
+            depth_top(i) = st%depth(i-1) 
+        enddo
+        st%rdepth = 0.
+        do ipft = 1, npft
+            st%rdepth = st%rdepth + st%sp(ipft)%pft_weight * st%sp(ipft)%rdepth
+        enddo
+        do i = 1, 10
+            if(st%rdepth .gt. st%depth(i)) nfr = i+1
+        enddo
+        IF (nfr.GT.10) nfr=10
+        ! ---------- added for soil thermal    
+        if (do_soilphy) then 
+            st%infilt   = st%infilt + st%melt/24 + iforcing%rain
+            if (st%ice(1) .gt. 0.0) then        ! Jian: no use in ice? 2022/11/15
+                ! st%infilt = 0.0
+            endif
+        else
+            st%infilt = st%infilt + iforcing%rain           ! ..int commented lines for soil thermal module, included in the previous loop; !mm/hour  
+        endif 
+        ! ------------------------------------------
+        ! update the wcl and wsc based on the input water table: iforcing%zwt (mm)
+        
+        do i = 1, 10
+            if (iforcing%zwt >= 0.0) then
+                st%wcl(i) = FLDCAP
+            else if ( -iforcing%zwt <= depth_top(i)*10.) then
+                st%wcl(i) = FLDCAP
+            else if ((-iforcing%zwt <= st%depth(i)*10.) .and. (-iforcing%zwt > depth_top(i)*10.)) then
+                st%wcl(i) = Amax1(st%wcl(i), & 
+                WILTPT_x + (FLDCAP - WILTPT_x)*(st%depth(i)*10. - (-iforcing%zwt))/(st%thksl(i)*10.))
+            else if (-iforcing%zwt > st%depth(i)*10.) then
+                st%wcl(i) = Amax1(st%wcl(i), WILTPT_x)
+            endif
+        enddo
+        !---------- end update ---------------------
+        ! water infiltration through layers; Loop over all soil layers.
+        twtadd = 0.
+        IF(st%infilt.GE.0.0)THEN
+            ! Add water to this layer, pass extra water to the next.
+            wtadd     = AMIN1(st%infilt, infilt_max, AMAX1((FLDCAP - st%wcl(1))*st%thksl(1)*10.0, 0.0)) ! from cm to mm
+            st%wcl(1) = (st%wcl(1)*(st%thksl(1)*10.0) + wtadd)/(st%thksl(1)*10.0)
+            twtadd    = twtadd    + wtadd       !calculating total added water to soil layers (mm)
+            st%infilt = st%infilt - wtadd       !update infilt
+        ENDIF
+        st%runoff = 0.
+        if (do_soilphy) then 
+            st%runoff = st%infilt*0.005   !(infilt_rate = 0.0017 defined earlier by Yuan, changed  to 0.001 by shuang )
+        else
+            st%runoff = st%infilt*0.001    ! Shuang added this elseif line! Shuang Modifed  Mar16 used to be 0.0019, the water lose too much lowest wt was >400
+        endif
+        st%infilt = st%infilt-st%runoff
+        ! ---------------------------------------------------
+        ! add the infilt to balance the water
+        if (st%transp .gt. 0.2 .and. st%transp .le. 0.22) then
+            st%infilt = st%infilt + st%transp*0.4
+        else if (st%transp .gt. 0.22) then
+            st%infilt = st%infilt + st%transp*0.8
+        else
+            st%infilt = st%infilt + st%transp*0.001
+        endif
+
+        if (st%evap .ge. 0.1 .and. st%evap .le. 0.15) then
+            st%infilt = st%infilt + st%evap*0.4
+        else if (st%evap .gt. 0.15) then
+            st%infilt = st%infilt + st%evap*0.8
+        else
+            st%infilt = st%infilt + st%evap*0.001
+        endif
+        !----------------------------------------------------------------------------------------------------   
+        ! water redistribution among soil layers
+        do i=1,10
+            st%wsc(i) = Amax1(0.00,(st%wcl(i)-WILTPT_x)*st%thksl(i)*10.0)
+            if (do_soilphy) then ! ..int commented lines for soil thermal 
+                omegaL(i) = Amax1(0.001,(st%liq_water(i)*100./st%thksl(i)-WILTPT_x)/(FLDCAP-WILTPT_x))
+            else
+                omegaL(i) = Amax1(0.001,(st%wcl(i)-WILTPT_x)/(FLDCAP-WILTPT_x))
+            endif        
+        enddo
+        supply = 0.0
+        demand = 0.0
+        do i=1,9
+            if(omegaL(i).gt.0.3)then
+                supply      = st%wsc(i)*(omegaL(i)-0.3)   ! supply=wsc(i)*omegaL(i)
+                demand      = (FLDCAP-st%wcl(i+1))*st%THKSL(i+1)*10.0*(1.0-omegaL(i+1))
+                exchangeL   = AMIN1(supply,demand)
+                st%wsc(i)   = st%wsc(i)   - exchangeL
+                st%wsc(i+1) = st%wsc(i+1) + exchangeL
+                st%wcl(i)   = st%wsc(i)/(st%THKSL(i)*10.0)+WILTPT_x
+                st%wcl(i+1) = st%wsc(i+1)/(st%THKSL(i+1)*10.0)+WILTPT_x
+            endif
+        enddo
+        st%wsc(10) = st%wsc(10) - st%wsc(10)*0.00001
+        st%runoff  = st%runoff  + st%wsc(10)*0.00001
+        st%wcl(10) = st%wsc(10)/(st%THKSL(10)*10.0)+WILTPT_x
+        ! re-calculate evap
+        
+        Tsrdt = 0.0
+        do i = 1, 10
+            srdt(i) = EXP(-6.73*(st%depth(i)-st%thksl(i)/2.0)/100.0)
+            Tsrdt   = Tsrdt+srdt(i)
+        enddo
+        do i=1,10
+            evapl(i)  = Amax1(AMIN1(st%evap*srdt(i)/Tsrdt, st%wsc(i)), 0.0)  !mm
+            dwcl(i)   = evapl(i)/(st%thksl(i)*10.0) !ratio
+            st%wcl(i) = st%wcl(i)-dwcl(i)
+        enddo
+        st%evap = 0.0 
+        do i=1,10
+            st%evap = st%evap + evapl(i)
+        enddo
+        
+        ! Redistribute transpiration according to root biomass and available water in each layer
+        st%transp = 0.
+        do ipft = 1, npft
+            tr_allo = 0.0
+            ! w_wsc   = st%sp(ipft)%pft_weight
+            do i=1,nfr
+                tr_ratio(i) = st%sp(ipft)%frlen(i) * st%wsc(i) !*(wcl(i)-wiltpt)) !*THKSL(I))
+                tr_allo     = tr_allo + tr_ratio(i)
+            enddo
+            do i=1,nfr
+                st%sp(ipft)%plantup(i) = AMIN1(st%sp(ipft)%transp*tr_ratio(i)/tr_allo, st%wsc(i)) !mm          
+                wupl(i)    = st%sp(ipft)%plantup(i)/(st%thksl(i)*10.0)
+                st%wcl(i)  = st%wcl(i) - st%sp(ipft)%pft_weight * wupl(i)
+            enddo
+            st%sp(ipft)%transp = 0.0
+            do i=1,nfr
+                st%sp(ipft)%transp = st%sp(ipft)%transp + st%sp(ipft)%plantup(i)
+            enddo
+            st%transp = st%transp + st%sp(ipft)%pft_weight * st%sp(ipft)%transp
+        enddo
+        ! Jian: readd water according to evaporation, transpiration and soil moisture.
+        st%infilt = st%infilt + amax1(0.0,(1-st%omega)*st%transp)
+        st%infilt = st%infilt + amax1(0.0,(1-st%omega)*st%evap)
+
+        ! ---- again update wcl and wsc ----
+        do i = 1, 10
+            if (iforcing%zwt >= 0.0) then
+                st%wcl(i) = FLDCAP
+            else if ( -iforcing%zwt <= depth_top(i)*10.) then
+                st%wcl(i) = FLDCAP
+            else if ((-iforcing%zwt <= st%depth(i)*10.) .and. (-iforcing%zwt > depth_top(i)*10.)) then
+                st%wcl(i) = Amax1(st%wcl(i), WILTPT_x + (FLDCAP - WILTPT_x)*(st%depth(i)*10. - (-iforcing%zwt))/(st%thksl(i)*10.))
+            else if (-iforcing%zwt > st%depth(i)*10.) then
+                st%wcl(i) = Amax1(st%wcl(i), WILTPT_x)
+            endif
+        enddo
+
+        do i=1,10
+            st%wsc(i) = Amax1(0.00,(st%wcl(i) - WILTPT_x)*st%THKSL(i)*10.0)
+        enddo
+        ! ---------------------------------------------------------------------------    
+        ! water table module starts here
+        st%zwt = iforcing%zwt
+        ! if (do_soilphy) then
+        !     vtot = st%wsc(1) + st%wsc(2) + st%wsc(3) + st%infilt ! modified based on Ma et al., 2022
+        ! else 
+        !     vtot = st%wsc(1) + st%wsc(2) + st%wsc(3) + st%infilt!+wsc(4)+wsc(5) 
+        ! endif
+        ! ! infilt means standing water according to jiangjiang                          
+        ! phi        = 0.85                           ! soil porosity   mm3/mm3   the same unit with theta
+        ! zmax       = 300                            ! maximum water table depth   mm
+        ! thetasmin  = 0.25                           ! minimum volumetric water content at the soil surface   cm3/cm3
+        ! zthetasmin = 100                            ! maximum depth where evaporation influences soil moisture   mm
+        ! az         = (phi-thetasmin)/zthetasmin     ! gradient in soil moisture resulting from evaporation at the soil surface    mm-1
+
+        ! zwt1 = -sqrt(3.0*(phi*zmax-vtot)/(2.0*az))
+        ! zwt2 = -(3.0*(phi*zmax-vtot)/(2.0*(phi-thetasmin)))
+        ! zwt3 = vtot-phi*zmax                                  
+        ! if ((zwt1 .ge. -100) .and. (zwt1 .le. 0))   st%zwt = zwt1  !the non-linear part of the water table changing line
+        ! if (zwt2 .lt. -100)                         st%zwt = zwt2  !the linear part of the water table changing line
+        ! if (phi*zmax .lt. vtot)                     st%zwt = zwt3  !the linear part when the water table is above the soil surface   
+        ! water table module ends here
+        ! ---------------------------------------------------------------------------------------------------------------
+        
+        
+        do i=1,nfr       
+            if (do_soilphy) then 
+                ome(i)=(st%liq_water(i)*100./st%THKSL(i)-WILTPT_x)/(FLDCAP-WILTPT_x)
+                ome(i)=AMIN1(1.0,AMAX1(0.0,ome(i)))
+            else 
+                ome(i)=(st%wcl(i)-WILTPT_x)/(FLDCAP-WILTPT_x)
+                ome(i)=AMIN1(1.0,AMAX1(0.0,ome(i)))
+            endif 
+            fw(i)=amin1(1.0,3.333*ome(i))
+        enddo
+
+        if (do_soilphy) then 
+            st%topfws = amax1(0.0, st%topfws)
+        else 
+            st%topfws = amin1(1.0,(st%wcl(1)-WILTPT_x)/((FLDCAP-WILTPT_x)))
+        endif     
+
+        st%fwsoil = 0.0
+        st%omega  = 0.0
+        do i=1,nfr
+            st%fwsoil = st%fwsoil + fw(i) *st%FRLEN(i)
+            st%omega  = st%omega  + ome(i)*st%FRLEN(i)
+        enddo
+
+    end subroutine soilwater_obs
 
     subroutine Tsoil_simu(st, iforcing)          
         implicit none 
@@ -470,8 +700,12 @@ module soil
             THKNS1 = THKNS2
             DIFSV1 = DIFSV2 
         enddo
-        st%tsoil_layer(1)    = tsoill_0
-        st%tsoil_layer(2:11) = st%Tsoill(1:10)
+        if(do_obs_Tsoil)then
+            st%tsoil_layer = iforcing%Tsoil_lr  ! use observation
+        else
+            st%tsoil_layer(1)    = tsoill_0
+            st%tsoil_layer(2:11) = st%Tsoill(1:10)
+        endif
         return 
     end subroutine Tsoil_simu
 

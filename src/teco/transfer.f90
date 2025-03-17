@@ -15,7 +15,7 @@ module transfer
         real(8) :: Creuse0, ScNloss, N_deN0, LDON0
         real(8) :: CNmin, CNmax, S_w_min, S_omega, S_t(5)
         real(8) :: SNfine,SNcoarse,SNmicr,SNslow,SNpass
-        real(8) :: w_QNminer, Scalar_N_T, kappaVcmax
+        real(8) :: Scalar_N_T, kappaVcmax!, w_QNminer
 
         frac_soc = (/0.75,0.2,0.02,0.015,0.005,0.0,0.0,0.0,0.0,0.0/)  ! Jian: calculate the scales of Temperature and Scale_N_T
         Q10h     = (/st%Q10rh,st%Q10rh,st%Q10rh,st%Q10rh,st%Q10rh/)   ! Lit_m, lit_s, soil_f, soil_s, soil_p
@@ -164,9 +164,9 @@ module transfer
             if(st%sp(ipft)%N_demand > 0.)then
                 if(ksye/st%QNminer < Cfix0)then
                     ! N input: 2. N uptake
-                    st%sp(ipft)%test5 = st%sp(ipft)%N_demand
-                    st%sp(ipft)%test6 = st%sp(ipft)%N_deficit
-                    st%sp(ipft)%test7 = w_QNminer
+                    ! st%sp(ipft)%test5 = st%sp(ipft)%N_demand
+                    ! st%sp(ipft)%test6 = st%sp(ipft)%N_deficit
+                    ! st%sp(ipft)%test7 = w_QNminer
                     ! if(w_QNminer .le. 0) then
                     !     st%sp(ipft)%N_uptake = 0.
                     ! else

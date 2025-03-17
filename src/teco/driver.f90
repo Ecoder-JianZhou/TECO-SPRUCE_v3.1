@@ -4,7 +4,9 @@ module driver
     use vegetation
     use soil
     use transfer
-    use mcmc_mod
+#ifdef USE_MCMC
+    use mcmc_mod, only: get_simu_data
+#endif
     use io_mod
     USE, INTRINSIC :: IEEE_ARITHMETIC
     implicit none
@@ -238,7 +240,11 @@ module driver
                 return
             endif 
             ! run soil water processes
-            call soilwater(st, forcing(iclim))                      
+            if(do_obs_zwt)then
+                call soilwater_obs(st, forcing(iclim))
+            else
+                call soilwater(st, forcing(iclim)) 
+            endif                     
             ! st%ET = st%evap + st%transp
             
             ! ! Jian: to update module
@@ -307,7 +313,8 @@ module driver
             ! call updateYearly(st, iTotYearly, hoursOfYear, iyear, iday, ihour)
             call updateOutVars(st, outvars_y, hoursOfYear, iyear, iday, ihour)
 
-            if (do_mcmc) call GetSimuData(iyear, iday, ihour, st, iclim, iTotDaily, iTotMonthly, iTotYearly)
+            ! if (do_mcmc) call GetSimuData(iyear, iday, ihour, st, iclim, iTotDaily, iTotMonthly, iTotYearly)
+            if(do_mcmc) call get_simu_data(iyear, iday, ihour, st)
 
             if(do_out_csv) then
                 if(do_out_hr) then

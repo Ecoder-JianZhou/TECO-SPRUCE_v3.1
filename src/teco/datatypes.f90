@@ -1,6 +1,5 @@
 module datatypes
     implicit none
-    character(500) :: conf_nml_file
     ! settings
     character(50)  :: case_name        ! define the case name
     ! Note: Just set one of do_simu, do_mcmc and do_spinup to be "True"
@@ -10,6 +9,8 @@ module datatypes
     ! simulation selections 
     logical :: do_matrix               ! whether run matrix or not
     logical :: do_restart              ! whether read restart file or not
+    logical :: do_obs_zwt
+    logical :: do_obs_Tsoil
     logical :: do_snow                 ! do soil snow process or not
     logical :: do_soilphy              ! do soil physics or not
     logical :: do_EBG                  ! run EBG or not based on Ma et al., 2022
@@ -31,7 +32,7 @@ module datatypes
     character(300) :: watertablefile
     character(300) :: snowdepthfile
     character(300) :: in_restartfile
-    character(300) :: params_nml_file
+    character(300) :: defParamsFile
     character(300) :: mcmc_configfile
     character(300) :: spinup_configfile
     ! experiment setting: Jian: not test yet
@@ -97,16 +98,18 @@ module datatypes
         integer :: year
         integer :: doy
         integer :: hour
-        real(8)    :: Tair
-        real(8)    :: Tsoil
-        real(8)    :: RH                   ! Jian: RH seems confused in forcing and soil respiration
-        real(8)    :: VPD
-        real(8)    :: Rain
-        real(8)    :: WS
-        real(8)    :: PAR
-        real(8)    :: CO2
-        real(8)    :: PBOT                 ! unit patm Pa dynamic atmosphere pressure
-        real(8)    :: Ndep
+        real(8) :: Tair
+        real(8) :: Tsoil
+        real(8) :: RH                   ! Jian: RH seems confused in forcing and soil respiration
+        real(8) :: VPD
+        real(8) :: Rain
+        real(8) :: WS
+        real(8) :: PAR
+        real(8) :: CO2
+        real(8) :: PBOT                 ! unit patm Pa dynamic atmosphere pressure
+        real(8) :: Ndep
+        real(8) :: Tsoil_lr(11)!TS_0cm
+        real(8) :: zwt
     end type forcing_data_type
     type(forcing_data_type), allocatable, save :: forcing(:)
     integer :: nforcing
@@ -673,19 +676,21 @@ module datatypes
         implicit none
         character(*), intent(in) :: conf_nml_file
         integer io
-        namelist /nml_teco_settings/ case_name, & 
+
+        namelist /teco_settings/ case_name, & 
             do_simu,   do_mcmc,    do_spinup,&
-            do_matrix, do_restart, do_snow,    do_soilphy, do_EBG,  do_ndep,  do_leap, &
+            do_matrix, do_restart,  &
+            do_obs_zwt, do_obs_Tsoil, do_snow, do_soilphy, do_EBG,  do_ndep,  do_leap, &
             do_out_hr, do_out_day, do_out_mon, do_out_yr, &
             inDir,     outDir,&
-            climfile,  watertablefile, snowdepthfile, in_restartfile, params_nml_file, &
+            climfile,  watertablefile, snowdepthfile, in_restartfile, defParamsFile, &
             mcmc_configfile, spinup_configfile
-        namelist /nml_exps/ Ttreat, CO2treat, N_fert
+        namelist /exps_settings/ Ttreat, CO2treat, N_fert
 
-        print *, " Read TECO config nml file ...", conf_nml_file
+        print *, "# Read TECO config nml file ...", adjustl(trim(conf_nml_file))
         open(388, file = conf_nml_file)
-        read(388, nml  = nml_teco_settings,  iostat=io)
-        read(388, nml  = nml_exps,           iostat=io)
+        read(388, nml  = teco_settings, iostat=io)
+        read(388, nml  = exps_settings, iostat=io)
         close(388)
     end subroutine read_configs_nml
 
@@ -763,8 +768,8 @@ module datatypes
 
         enddo
     
-        st%Tau_C = st%Tau_C * 8760.
-        st%Tau_F = st%Tau_F * 8760.
+        st%Tau_C       = st%Tau_C * 8760.
+        st%Tau_F       = st%Tau_F * 8760.
         st%Tau_Micro   = st%Tau_Micro * 8760.
         st%Tau_SlowSOM = st%Tau_Micro * 8760.
         st%Tau_Passive = st%Tau_Passive * 8760.
@@ -1124,8 +1129,6 @@ module datatypes
         in_spec%N_deficit    = N_deficit
         in_spec%alphaN       = alphaN
         in_spec%frlen        = FRLEN
-        ! print*, frlen
-        ! stop 
         return
     end subroutine update_spec_init_values
 
@@ -1284,8 +1287,10 @@ module datatypes
         character(150) commts
         ! define variable for each line
         integer :: tmp_yr, tmp_doy, tmp_h
-        real(8)    :: tmp_Ta, tmp_Ts,  tmp_rh, tmp_vpd, tmp_rain, tmp_ws 
-        real(8)    :: tmp_par, tmp_co2, tmp_pbot, tmp_ndep
+        real(8) :: tmp_Ta, tmp_Ts,  tmp_rh, tmp_vpd, tmp_rain, tmp_ws 
+        real(8) :: tmp_par, tmp_co2, tmp_pbot, tmp_ndep
+        real(8) :: tmp_tsoil_0, tmp_tsoil_10, tmp_tsoil_20, tmp_tsoil_30, tmp_tsoil_40, tmp_tsoil_50
+        real(8) :: tmp_tsoil_70, tmp_tsoil_90, tmp_tsoil_110, tmp_tsoil_130, tmp_tsoil_150, tmp_zwt 
 
         call ReadLineNumFromFile(climfile, nforcing)  ! get the line number
 
@@ -1298,7 +1303,10 @@ module datatypes
             COUNT=COUNT+1
             READ(1,*,IOSTAT=STAT, end=993) tmp_yr, tmp_doy, tmp_h,   &
                 tmp_Ta,  tmp_Ts,  tmp_rh, tmp_vpd, tmp_rain, tmp_ws, & 
-                tmp_par, tmp_co2, tmp_pbot, tmp_ndep
+                tmp_par, tmp_co2, tmp_pbot, tmp_ndep,                &
+                tmp_tsoil_0, tmp_tsoil_10, tmp_tsoil_20, tmp_tsoil_30, tmp_tsoil_40, tmp_tsoil_50, &
+                tmp_tsoil_70, tmp_tsoil_90, tmp_tsoil_110, tmp_tsoil_130, tmp_tsoil_150, tmp_zwt
+
             IF(STAT .NE. 0) EXIT
             forcing(COUNT)%year  = tmp_yr
             forcing(COUNT)%doy   = tmp_doy
@@ -1313,6 +1321,18 @@ module datatypes
             forcing(COUNT)%CO2   = tmp_co2
             forcing(COUNT)%PBOT  = tmp_pbot
             forcing(COUNT)%Ndep  = tmp_ndep
+            forcing(COUNT)%Tsoil_lr(1) = tmp_tsoil_0
+            forcing(COUNT)%Tsoil_lr(2) = tmp_tsoil_10 
+            forcing(COUNT)%Tsoil_lr(3) = tmp_tsoil_20 
+            forcing(COUNT)%Tsoil_lr(4) = tmp_tsoil_30 
+            forcing(COUNT)%Tsoil_lr(5) = tmp_tsoil_40 
+            forcing(COUNT)%Tsoil_lr(6) = tmp_tsoil_50
+            forcing(COUNT)%Tsoil_lr(7) = tmp_tsoil_70 
+            forcing(COUNT)%Tsoil_lr(8) = tmp_tsoil_90 
+            forcing(COUNT)%Tsoil_lr(9) = tmp_tsoil_110 
+            forcing(COUNT)%Tsoil_lr(10) = tmp_tsoil_130 
+            forcing(COUNT)%Tsoil_lr(11) = tmp_tsoil_150
+            forcing(COUNT)%zwt   = tmp_zwt*1000 ! m to mm
         ENDDO
 993     continue
         CLOSE(1)
@@ -1350,7 +1370,7 @@ module datatypes
         character(len=*), intent(in) :: filepath
         character(len=100) header, line
         integer STAT, count_lines
-        print*, "file path: ", trim(filepath)
+        print*, "Reading file path: ", trim(filepath)
         open(38, file=trim(filepath), status="old", action="read", iostat=STAT) ! open file
         read(38, '(a100)') header           ! read the header of the file
         count_lines = 0                     ! initilize the count_lines
@@ -1361,7 +1381,7 @@ module datatypes
         enddo
         close(38)
         return
-    end subroutine ReadLineNumFromFile
+    end subroutine ReadLineNumFromFile 
 
     subroutine deallocate_results(outVars, in_npft)
         implicit none

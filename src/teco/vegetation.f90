@@ -146,8 +146,8 @@ module vegetation
       ! local variables
       real(8) :: Tcold, phiN
       real(8) :: bmL, bmR, bmS, bmP, acP, CNp0
-      real(8) :: scalT, scalW
-      real(8) :: GPmax, GrowthP, GrowthL, GrowthR, GrowthS
+      real(8) :: scalW!,scalT
+      ! real(8) :: GrowthP, GrowthL, GrowthR, GrowthS
       real(8) :: gamma_Wmax, gamma_Tmax
       real(8) :: bW, bT, beta_T, gamma_W, gamma_T, gamma_N
       integer :: ipft

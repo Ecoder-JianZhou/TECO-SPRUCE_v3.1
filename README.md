@@ -8,3 +8,10 @@ develop TECO-SPRUCE_v3.1
 
 # Done
 1. copy all code and settings from TECO-SPRUCE_v3.0
+    revise the structure of TECO-SPRUCE to teco and mcmc
+        TECO core code provides two interfaces: 1. parameter update; 2. outputs with date
+    
+    remove the nc-format outputs
+
+
+Tsoil and zwt in forcing data

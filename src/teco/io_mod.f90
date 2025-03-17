@@ -11,10 +11,10 @@ module io_mod
     
     contains
 
-    subroutine read_nml_params_initValues(in_params_nml_file)
+    subroutine read_nml_params_initValues(in_paramsNmlFile)
         implicit none
         integer io, ipft
-        character(*), intent(in) :: in_params_nml_file
+        character(*), intent(in) :: in_paramsNmlFile
 
         !!! site-based parameters
         real(8) :: lat, lon,  wsmax,  wsmin,  extkU
@@ -109,8 +109,8 @@ module io_mod
             FRLEN_1, FRLEN_2, FRLEN_3, FRLEN_4, FRLEN_5, &
             FRLEN_6, FRLEN_7, FRLEN_8, FRLEN_9, FRLEN_10
         ! -----------------------------------------------------------------------------------
-        print *, "# read parameters nml file: ", in_params_nml_file
-        open(343, file = adjustl(trim(in_params_nml_file)))
+        print *, "# read parameters nml file: ", adjustl(trim(in_paramsNmlFile))
+        open(343, file = adjustl(trim(in_paramsNmlFile)))
         read(343, nml  = nml_site_params,            iostat=io)
         read(343, nml  = nml_species_params,         iostat=io)
         read(343, nml  = nml_site_initial_values,    iostat=io)
@@ -287,9 +287,6 @@ module io_mod
             in_params_vals%sp_init_val(ipft)%FRLEN(8)     = FRLEN_8(ipft)
             in_params_vals%sp_init_val(ipft)%FRLEN(9)     = FRLEN_9(ipft)
             in_params_vals%sp_init_val(ipft)%FRLEN(10)    = FRLEN_10(ipft)
-            ! print*, "frlen: ", FRLEN_1, FRLEN_2, FRLEN_3, FRLEN_4, FRLEN_5, FRLEN_6, &
-            !     FRLEN_7, FRLEN_8, FRLEN_9, FRLEN_10
-            ! print*, in_params_vals%sp_init_val(ipft)%FRLEN
         enddo
     end subroutine read_nml_params_initValues
 
