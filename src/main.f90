@@ -79,6 +79,7 @@ program TECO
         call init_mcmc(mcmc_configfile)  ! initilize the MCMC 
         call run_mcmc(st)                    ! run MCMC
         call deallocate_mcmc()               ! deallocate the MCMC variables 
+        call mcmc_vars_deallocate()
 #endif
     
     elseif(do_spinup)then

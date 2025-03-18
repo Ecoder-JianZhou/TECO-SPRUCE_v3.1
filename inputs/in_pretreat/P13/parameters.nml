@@ -30,6 +30,7 @@ Toxi = 10.
 f = 0.365
 bubprob = 0.3105
 Vmaxfraction = 0.08666
+pox = 0.5
 f_fast = 0.00898
 f_slow = 0.5567
 s_soil = 0.8956

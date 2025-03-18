@@ -4,7 +4,7 @@ module mcmc_mod
 
     implicit none
     integer, parameter :: numPFT = 3, numObsFiles = 19
-    integer, parameter :: numStParams = 38, numSpParams = 37
+    integer, parameter :: numStParams = 39, numSpParams = 37
     integer :: numAllParams = numStParams + numPFT*numSpParams
 
     ! mcmc setttings
@@ -44,6 +44,8 @@ module mcmc_mod
     end type mcmc_observation_file
     type(mcmc_observation_file) :: mcObsFiles
 
+    real(8)::obsWt(numObsFiles)
+
     ! observations data
     type each_mcmc_param_data
         character(50) :: varname
@@ -76,9 +78,8 @@ module mcmc_mod
 
     ! define some variables for MCMC
     type index_species_parameters_to_opt
-        real(8), allocatable :: idx(:)
+        integer(8), allocatable :: idx(:)
     end type index_species_parameters_to_opt
-
 
 
     contains
@@ -93,6 +94,7 @@ module mcmc_mod
 
         namelist /nml_mcmc_settings/ mcset
         namelist /obsFiles/ mcObsFiles
+        namelist /obsWeight/ obsWt
         namelist /siteDAParams/ st
         namelist /spDAParams/ sp
 
@@ -100,6 +102,7 @@ module mcmc_mod
         open(388, file = in_mcConfNmlFile)
         read(388, nml  = nml_mcmc_settings, iostat=io)
         read(388, nml  = obsFiles,          iostat=io)
+        read(388, nml  = obsWeight,         iostat=io)
         read(388, nml  = siteDAParams,      iostat=io)
         read(388, nml  = spDAParams,        iostat=io)
         close(388)
@@ -250,6 +253,7 @@ module mcmc_mod
                 case ("par_fsub");    in_params_vals%st_params%par_fsub    = mcParams%st(i)%parval
                 case ("par_rho_snow");in_params_vals%st_params%par_rho_snow= mcParams%st(i)%parval
                 case ("par_decay_m"); in_params_vals%st_params%par_decay_m = mcParams%st(i)%parval
+                case ("pox");         in_params_vals%st_params%pox         = mcParams%st(i)%parval
             end select
         end do
 
@@ -394,6 +398,10 @@ module mcmc_mod
 
     subroutine deallocate_mcmc()
         implicit NONE
-
+        integer :: i
+        do i = 1, numObsFiles
+            if(allocated(mcVarData(i)%obsData)) deallocate(mcVarData(i)%obsData)
+            if(allocated(mcVarData(i)%mdData))  deallocate(mcVarData(i)%mdData)
+        enddo
     end subroutine deallocate_mcmc
 end module mcmc_mod

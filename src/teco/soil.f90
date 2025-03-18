@@ -207,8 +207,8 @@ module soil
         real(8) :: infilt_max, WILTPT_x, FLDCAP
         real(8) :: dwcl(10), evapl(10), wupl(10), srdt(10), depth_top(10)
         real(8) :: twtadd, wtadd, supply, demand, exchangeL
-        real(8) :: omegaL(10), Tsrdt, tr_allo, Tr_ratio(10), w_wsc(10)
-        real(8) :: phi, zmax, thetasmin, zthetasmin, az, zwt1,zwt2,zwt3, vtot
+        real(8) :: omegaL(10), Tsrdt, tr_allo, Tr_ratio(10)!, w_wsc(10)
+        ! real(8) :: phi, zmax, thetasmin, zthetasmin, az, zwt1,zwt2,zwt3, vtot
         real(8) :: fw(10), ome(10)
         integer :: i, ipft, nfr
 
@@ -1248,7 +1248,7 @@ module soil
         endif  
         Pla_sum=0.0
         do i=1,nlayers
-            PlaCH4(i) = Kpla*st%Tveg*st%FRLEN(i)*fgrow*st%CH4(i)*(1-Pox)         !not sensitive at all to this change, but better
+            PlaCH4(i) = Kpla*st%Tveg*st%FRLEN(i)*fgrow*st%CH4(i)*(1-st%Pox)         !not sensitive at all to this change, but better
             Pla_sum   = Pla_sum+PlaCH4(i)
             st%CH4(i)=st%CH4(i)-Kpla*st%Tveg*FRLEN_PMT(i)*fgrow*st%CH4(i)!PlaCH4(i)/(1-Pox)
             ! if(ISNAN(st%CH4(i)))then ! add by Jian

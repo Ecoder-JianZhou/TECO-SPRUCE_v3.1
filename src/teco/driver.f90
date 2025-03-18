@@ -127,7 +127,7 @@ module driver
                 endif
                 ! for update the results of monthly and yearly
                 call update_hoursOfYear_daysOfmonth_initMonthly(iday, ihour, &
-                        daysOfyear, daysOfmonth, hoursOfYear, hoursOfmonth, iTotMonthly)
+                        daysOfyear, daysOfmonth, hoursOfYear, hoursOfmonth)!, iTotMonthly)
             endif
 
             call update_summary_monthly(iday, ihour, daysOfmonth, iTotMonthly)
@@ -392,11 +392,11 @@ module driver
     end subroutine isLeap_update_daysOfyear
 
     subroutine update_hoursOfYear_daysOfmonth_initMonthly(iday, ihour, &
-        daysOfyear, daysOfmonth, hoursOfYear, hoursOfmonth, iTotMonthly)
+        daysOfyear, daysOfmonth, hoursOfYear, hoursOfmonth)!, iTotMonthly)
         implicit none
         integer, intent(in)    :: iday, ihour
         integer, intent(inout) :: daysOfyear, daysOfmonth(12)
-        integer, intent(inout) :: hoursOfYear, hoursOfmonth, iTotMonthly
+        integer, intent(inout) :: hoursOfYear, hoursOfmonth!, iTotMonthly
         if (daysOfyear .eq. 365) then ! common year
             hoursOfYear = 365*24
             daysOfmonth = (/31,59,90,120,151,181,212,243,273,304,334,365/)

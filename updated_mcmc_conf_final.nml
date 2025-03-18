@@ -1,5 +1,5 @@
 &nml_mcmc_settings
-    mcset%nDAsimu       = 100
+    mcset%nDAsimu       = 50
     mcset%search_scale  = 0.02
     mcset%ncov          = 50000
     mcset%nRand         = 5
@@ -32,44 +32,44 @@
 /
 
 &siteDAParams         !name, default value,  minmum,        maximum
-  st( 1)%parName = "wsmax",           st( 1)%parVal =   85.89000, st( 1)%parMin =   70.30000, st( 1)%parMax =   95.30000
-  st( 2)%parName = "wsmin",           st( 2)%parVal =    0.20000, st( 2)%parMin =    0.20000, st( 2)%parMax =    0.20000
+  st( 1)%parName = "wsmax",            st( 1)%parVal = 86.40000, st( 1)%parMin =   70.30000, st( 1)%parMax =   95.30000
+  st( 2)%parName = "wsmin",            st( 2)%parVal = 0.20000, st( 2)%parMin =    0.20000, st( 2)%parMax =    0.20000
   st( 3)%parName = "extkU",           st( 3)%parVal =    0.51000, st( 3)%parMin =    0.51000, st( 3)%parMax =    0.51000
-  st( 4)%parName = "Tau_F",           st( 4)%parVal =    0.89180, st( 4)%parMin =    0.10000, st( 4)%parMax =    3.00000
-  st( 5)%parName = "Tau_C",           st( 5)%parVal =    5.68900, st( 5)%parMin =    1.00000, st( 5)%parMax =   20.00000
-  st( 6)%parName = "Tau_Micro",       st( 6)%parVal =    0.16300, st( 6)%parMin =    0.05000, st( 6)%parMax =    0.80000
-  st( 7)%parName = "Tau_SlowSOM",     st( 7)%parVal =   22.78000, st( 7)%parMin =    5.00000, st( 7)%parMax =  150.00000
-  st( 8)%parName = "Tau_Passive",     st( 8)%parVal =  613.40000, st( 8)%parMin =  300.00000, st( 8)%parMax = 4000.00000
-  st( 9)%parName = "Q10rh",           st( 9)%parVal =    6.09300, st( 9)%parMin =    1.00000, st( 9)%parMax =    8.00000
+  st( 4)%parName = "Tau_F",            st( 4)%parVal = 0.83350, st( 4)%parMin =    0.10000, st( 4)%parMax =    3.00000
+  st( 5)%parName = "Tau_C",            st( 5)%parVal = 6.03800, st( 5)%parMin =    1.00000, st( 5)%parMax =   20.00000
+  st( 6)%parName = "Tau_Micro",        st( 6)%parVal = 0.09217, st( 6)%parMin =    0.05000, st( 6)%parMax =    0.80000
+  st( 7)%parName = "Tau_SlowSOM",      st( 7)%parVal = 14.11000, st( 7)%parMin =    5.00000, st( 7)%parMax =  150.00000
+  st( 8)%parName = "Tau_Passive",      st( 8)%parVal = 610.40000, st( 8)%parMin =  300.00000, st( 8)%parMax = 4000.00000
+  st( 9)%parName = "Q10rh",            st( 9)%parVal = 5.91300, st( 9)%parMin =    1.00000, st( 9)%parMax =    8.00000
   st(10)%parName = "etaW",            st(10)%parVal =    0.15000, st(10)%parMin =    0.15000, st(10)%parMax =    0.15000
-  st(11)%parName = "f_F2M",           st(11)%parVal =    0.45390, st(11)%parMin =    0.35000, st(11)%parMax =    0.60000
-  st(12)%parName = "f_C2M",           st(12)%parVal =    0.27480, st(12)%parMin =    0.25000, st(12)%parMax =    0.30000
-  st(13)%parName = "f_C2S",           st(13)%parVal =    0.27720, st(13)%parMin =    0.25000, st(13)%parMax =    0.30000
-  st(14)%parName = "f_M2S",           st(14)%parVal =    0.31770, st(14)%parMin =    0.10000, st(14)%parMax =    0.40000
-  st(15)%parName = "f_M2P",           st(15)%parVal =    0.00510, st(15)%parMin =    0.00000, st(15)%parMax =    0.01000
-  st(16)%parName = "f_S2P",           st(16)%parVal =    0.03162, st(16)%parMin =    0.00000, st(16)%parMax =    0.05000
-  st(17)%parName = "f_S2M",           st(17)%parVal =    0.40820, st(17)%parMin =    0.10000, st(17)%parMax =    0.60000
-  st(18)%parName = "f_P2M",           st(18)%parVal =    0.45630, st(18)%parMin =    0.30000, st(18)%parMax =    0.70000
-  st(19)%parName = "r_me",            st(19)%parVal =    0.07355, st(19)%parMin =    0.00100, st(19)%parMax =    0.90000
-  st(20)%parName = "Q10pro",          st(20)%parVal =    2.87900, st(20)%parMin =    1.00000, st(20)%parMax =    6.00000
-  st(21)%parName = "kCH4",            st(21)%parVal =    5.00000, st(21)%parMin =    5.00000, st(21)%parMax =    5.00000
-  st(22)%parName = "Omax",            st(22)%parVal =   23.47000, st(22)%parMin =    0.01000, st(22)%parMax =   45.00000
-  st(23)%parName = "CH4_thre",        st(23)%parVal = 1343.00000, st(23)%parMin =  500.00000, st(23)%parMax = 1500.00000
-  st(24)%parName = "Tveg",            st(24)%parVal =    7.94700, st(24)%parMin =    0.00100, st(24)%parMax =   15.00000
-  st(25)%parName = "Tpro_me",         st(25)%parVal =   10.00000, st(25)%parMin =   10.00000, st(25)%parMax =   10.00000
-  st(26)%parName = "Toxi",            st(26)%parVal =   10.00000, st(26)%parMin =   10.00000, st(26)%parMax =   10.00000
-  st(27)%parName = "f",               st(27)%parVal =    0.38950, st(27)%parMin =    0.01000, st(27)%parMax =    0.50000
-  st(28)%parName = "bubprob",         st(28)%parVal =    0.25830, st(28)%parMin =    0.01000, st(28)%parMax =    0.50000
-  st(29)%parName = "Vmaxfraction",    st(29)%parVal =    0.08837, st(29)%parMin =    0.01000, st(29)%parMax =    0.20000
+  st(11)%parName = "f_F2M",            st(11)%parVal = 0.46600, st(11)%parMin =    0.35000, st(11)%parMax =    0.60000
+  st(12)%parName = "f_C2M",            st(12)%parVal = 0.27530, st(12)%parMin =    0.25000, st(12)%parMax =    0.30000
+  st(13)%parName = "f_C2S",            st(13)%parVal = 0.27420, st(13)%parMin =    0.25000, st(13)%parMax =    0.30000
+  st(14)%parName = "f_M2S",            st(14)%parVal = 0.32720, st(14)%parMin =    0.10000, st(14)%parMax =    0.40000
+  st(15)%parName = "f_M2P",            st(15)%parVal = 0.00511, st(15)%parMin =    0.00000, st(15)%parMax =    0.01000
+  st(16)%parName = "f_S2P",            st(16)%parVal = 0.03400, st(16)%parMin =    0.00000, st(16)%parMax =    0.05000
+  st(17)%parName = "f_S2M",            st(17)%parVal = 0.42070, st(17)%parMin =    0.10000, st(17)%parMax =    0.60000
+  st(18)%parName = "f_P2M",            st(18)%parVal = 0.42930, st(18)%parMin =    0.30000, st(18)%parMax =    0.70000
+  st(19)%parName = "r_me",             st(19)%parVal = 0.03763, st(19)%parMin =    0.00100, st(19)%parMax =    0.90000
+  st(20)%parName = "Q10pro",           st(20)%parVal = 3.16900, st(20)%parMin =    1.00000, st(20)%parMax =    6.00000
+  st(21)%parName = "kCH4",             st(21)%parVal = 5.00000, st(21)%parMin =    5.00000, st(21)%parMax =    5.00000
+  st(22)%parName = "Omax",             st(22)%parVal = 22.13000, st(22)%parMin =    0.01000, st(22)%parMax =   45.00000
+  st(23)%parName = "CH4_thre",         st(23)%parVal = 1332.00000, st(23)%parMin =  500.00000, st(23)%parMax = 1500.00000
+  st(24)%parName = "Tveg",             st(24)%parVal = 7.26300, st(24)%parMin =    0.00100, st(24)%parMax =   15.00000
+  st(25)%parName = "Tpro_me",          st(25)%parVal = 10.00000, st(25)%parMin =   10.00000, st(25)%parMax =   10.00000
+  st(26)%parName = "Toxi",             st(26)%parVal = 10.00000, st(26)%parMin =   10.00000, st(26)%parMax =   10.00000
+  st(27)%parName = "f",                st(27)%parVal = 0.37850, st(27)%parMin =    0.01000, st(27)%parMax =    0.50000
+  st(28)%parName = "bubprob",          st(28)%parVal = 0.27280, st(28)%parMin =    0.01000, st(28)%parMax =    0.50000
+  st(29)%parName = "Vmaxfraction",     st(29)%parVal = 0.08566, st(29)%parMin =    0.01000, st(29)%parMax =    0.20000
   st(30)%parName = "f_fast",          st(30)%parVal =    0.00196, st(30)%parMin =    0.00100, st(30)%parMax =    0.05000
   st(31)%parName = "f_slow",          st(31)%parVal =    0.54110, st(31)%parMin =    0.45000, st(31)%parMax =    0.65000
   st(32)%parName = "s_soil",          st(32)%parVal =    1.08000, st(32)%parMin =    0.50000, st(32)%parMax =    2.00000
-  st(33)%parName = "par_shcap_snow",  st(33)%parVal = 993900.00000, st(33)%parMin = 20909.00000, st(33)%parMax = 1150000.00000
-  st(34)%parName = "par_condu_snow",  st(34)%parVal =    0.08155, st(34)%parMin =    0.01000, st(34)%parMax =    0.56000
-  st(35)%parName = "par_condu_b",     st(35)%parVal =    0.08627, st(35)%parMin =    0.02300, st(35)%parMax =    0.23000
-  st(36)%parName = "par_fsub",        st(36)%parVal =    0.11330, st(36)%parMin =    0.10000, st(36)%parMax =    1.00000
-  st(37)%parName = "par_rho_snow",    st(37)%parVal =   81.67000, st(37)%parMin =   50.00000, st(37)%parMax =  100.00000
-  st(38)%parName = "par_decay_m",     st(38)%parVal =    2.70100, st(38)%parMin =    0.10000, st(38)%parMax =   10.00000
+  st(33)%parName = "par_shcap_snow",   st(33)%parVal = 936500.00000, st(33)%parMin = 20909.00000, st(33)%parMax = 1150000.00000
+  st(34)%parName = "par_condu_snow",   st(34)%parVal = 0.06283, st(34)%parMin =    0.01000, st(34)%parMax =    0.56000
+  st(35)%parName = "par_condu_b",      st(35)%parVal = 0.09831, st(35)%parMin =    0.02300, st(35)%parMax =    0.23000
+  st(36)%parName = "par_fsub",         st(36)%parVal = 0.17160, st(36)%parMin =    0.10000, st(36)%parMax =    1.00000
+  st(37)%parName = "par_rho_snow",     st(37)%parVal = 83.31000, st(37)%parMin =   50.00000, st(37)%parMax =  100.00000
+  st(38)%parName = "par_decay_m",      st(38)%parVal = 2.80300, st(38)%parMin =    0.10000, st(38)%parMax =   10.00000
 /
 
 

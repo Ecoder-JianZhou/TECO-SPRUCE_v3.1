@@ -256,7 +256,8 @@ module datatypes
         real(8) :: Toxi  
         real(8) :: f   
         real(8) :: bubprob  
-        real(8) :: Vmaxfraction  
+        real(8) :: Vmaxfraction
+        real(8) :: pox
         ! add to modify the pool size
         real(8) :: f_fast
         real(8) :: f_slow
@@ -524,6 +525,7 @@ module datatypes
         real(8) :: f 
         real(8) :: bubprob 
         real(8) :: Vmaxfraction
+        real(8) :: pox
         ! -------------------------
         ! add for modifying the pool size
         real(8) :: f_fast   ! the proportion of soil fast pool in total soil pool
@@ -823,7 +825,8 @@ module datatypes
             &   in_params_vals%st_params%par_shcap_snow, in_params_vals%st_params%par_condu_snow, &
             &   in_params_vals%st_params%par_condu_b, &!in_params_vals%st_params%par_albedo_snow, &
             &   in_params_vals%st_params%par_fsub, in_params_vals%st_params%par_rho_snow, &
-            &   in_params_vals%st_params%par_decay_m)
+            &   in_params_vals%st_params%par_decay_m, &
+            &   in_params_vals%st_params%pox)
     end subroutine init_site_params
 
     subroutine init_site_init_values(st)
@@ -895,7 +898,7 @@ module datatypes
         Tveg, Tpro_me, Toxi, f, bubprob, Vmaxfraction, &
         f_fast, f_slow, s_soil,&
         par_shcap_snow, par_condu_snow, par_condu_b, & !par_albedo_snow, 
-        par_fsub, par_rho_snow, par_decay_m)
+        par_fsub, par_rho_snow, par_decay_m, pox)
         implicit none
         type(site_data_type), intent(inout) :: in_st
         !!! site-based parameters
@@ -906,7 +909,7 @@ module datatypes
         real(8), intent(in) :: Tveg, Tpro_me, Toxi, f, bubprob, Vmaxfraction 
         real(8), intent(in) :: f_fast, f_slow, s_soil
         real(8), intent(in) :: par_shcap_snow, par_condu_snow, par_condu_b
-        real(8), intent(in) :: par_fsub, par_rho_snow, par_decay_m
+        real(8), intent(in) :: par_fsub, par_rho_snow, par_decay_m, pox
         in_st%lat          = lat
         in_st%lon          = lon
         in_st%wsmax        = wsmax
@@ -938,6 +941,7 @@ module datatypes
         in_st%f            = f
         in_st%bubprob      = bubprob
         in_st%Vmaxfraction = Vmaxfraction
+        in_st%pox          = pox
         ! add new parameters
         in_st%f_fast       = f_fast
         in_st%f_slow       = f_slow

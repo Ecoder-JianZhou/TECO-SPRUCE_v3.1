@@ -760,7 +760,8 @@ module vegetation
       real(8) :: Rd, Tdiff, gammas, gamma, a1, X, Gma, Bta
       real(8) :: Acx, Aqx ! from ciandA
 
-      CO2Csx = AMAX1(CO2Csx,0.6*CO2Ca)
+      ! CO2Csx = AMAX1(CO2Csx,0.6*CO2Ca)
+      CO2Csx = 0.6*CO2Ca
       ! check if it is dark - if so calculate respiration and gsc0 to assign conductance
       if(Qapar.le.0.) then                            !night, umol quanta/m2/s
          Aleafx = -0.0089*Vcmxx*exp(0.069*(Tlk-293.2))   ! original: 0.0089 Weng 3/22/2006

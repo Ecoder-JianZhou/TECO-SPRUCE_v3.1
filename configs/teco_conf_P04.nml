@@ -1,5 +1,5 @@
 &teco_settings
-    case_name = "run_mcmc" ! define the case name
+    case_name = "run_mcmc_P04" ! define the case name
     do_simu     = False            ! simulation mode
     do_mcmc     = True                  ! MCMC mode  if true, USE_MCMC must be true
     do_spinup   = False !True           ! spinup mode if true, USE_SPINUP must be true
@@ -34,7 +34,7 @@
     defParamsFile     = "parameters.nml"
 
     ! set the configure file for MCMC and SPIN-UP
-    mcmc_configfile   = "configs/mcmc_conf.nml"
+    mcmc_configfile   = "configs/mcmc_conf_P04.nml"
     spinup_configfile = "spinup_configs.nml"
 /
 

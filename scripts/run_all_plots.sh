@@ -1,0 +1,10 @@
+nohup ./teco-spruce.exe teco_conf_P04.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P04.log &
+nohup ./teco-spruce.exe teco_conf_P06.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P06.log &
+nohup ./teco-spruce.exe teco_conf_P08.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P08.log &
+nohup ./teco-spruce.exe teco_conf_P10.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P10.log &
+nohup ./teco-spruce.exe teco_conf_P11.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P11.log &
+nohup ./teco-spruce.exe teco_conf_P13.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P13.log &
+nohup ./teco-spruce.exe teco_conf_P16.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P16.log &
+nohup ./teco-spruce.exe teco_conf_P17.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P17.log &
+nohup ./teco-spruce.exe teco_conf_P19.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P19.log &
+nohup ./teco-spruce.exe teco_conf_P20.nml > /Users/jianzhou/MyDocs/1_works/1_proj_SPRUCE/1_SPRUCE_DA/6_revised_TECO_nature/outputs/outlogs/out_P20.log &

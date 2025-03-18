@@ -21,7 +21,7 @@ module io_mod
         real(8) :: Tau_F, Tau_C, Tau_Micro, Tau_SlowSOM, Tau_Passive
         real(8) :: Q10rh, etaW, f_F2M, f_C2M, f_C2S, f_M2S, f_M2P, f_S2P, f_S2M, f_P2M  
         real(8) :: r_me, Q10pro, kCH4, Omax, CH4_thre  
-        real(8) :: Tveg, Tpro_me, Toxi, f, bubprob, Vmaxfraction 
+        real(8) :: Tveg, Tpro_me, Toxi, f, bubprob, Vmaxfraction, pox 
         real(8) :: f_fast, f_slow, s_soil      ! the proportion of soil slow pool in total soil pool
         real(8) :: par_shcap_snow
         real(8) :: par_condu_snow
@@ -76,7 +76,7 @@ module io_mod
             Tveg, Tpro_me, Toxi, f, bubprob, Vmaxfraction, &
             f_fast, f_slow, s_soil, &
             par_shcap_snow, par_condu_snow, par_condu_b, & !par_albedo_snow, &
-            par_fsub, par_rho_snow, par_decay_m
+            par_fsub, par_rho_snow, par_decay_m, pox
 
         namelist /nml_species_params/ count_pft, stom_n, &
             spec_names, &
@@ -152,6 +152,7 @@ module io_mod
         in_params_vals%st_params%f            = f
         in_params_vals%st_params%bubprob      = bubprob
         in_params_vals%st_params%Vmaxfraction = Vmaxfraction
+        in_params_vals%st_params%pox          = pox
         in_params_vals%st_params%f_fast       = f_fast
         in_params_vals%st_params%f_slow       = f_slow
         in_params_vals%st_params%s_soil       = s_soil

@@ -33,14 +33,16 @@ module mcmc
         ! 2. do cylces
         do iDAsimu = 1, mcset%nDAsimu
             upgraded_rate = (real(upgraded, 8) / real(iDAsimu, 8))*100
-            write(*, '(I6, A1, I6, 2X, F10.2, 2X, F10.2, 2X, I6, 2X, F6.2)') &
+            write(*, '(I6, A1, I6, 2X, F12.2, 2X, F12.2, 2X, I6, 2X, F6.2)') &
                 iDAsimu, '/', mcset%nDAsimu, sum(J_new), sum(J_last), upgraded, upgraded_rate
                 ! initilize
             do i = 1, numObsFiles
                 mcVarData(i)%mark_idx = 1
             end do
+
             ! update mcparams
             call generate_new_parameters()
+
             call update_mcParams(DAparVal, idxStPar, idxSpPar)
             call update_simuParams() ! update parameters to simulate
 
@@ -120,6 +122,7 @@ module mcmc
         DAparVal = temp_parval(:npar4DA)
         idxStPar = temp_idx_st(:nStPar4DA)
         DAparOldVal = DAparVal
+
     end subroutine filter_params_to_optimize
 
     subroutine generate_new_parameters()
@@ -133,41 +136,46 @@ module mcmc
         else
         ! do normal update parameters
             do i = 1, npar4DA
-                call random_number(rand_harvest)
-                rand = rand_harvest - 0.5 
-                ! Ensure parameter is within bounds
-                if(DAparOldVal(i) > DAparMax(i) .or. DAparOldVal(i) < DAparMin(i))then
-                    DAparOldVal(i) = DAparMin(i) + rand_harvest*(DAparMax(i)-DAparMin(i))
-                endif
-                if(DAparMin(i) .eq. DAparMax(i)) then
-                    DAparOldVal(i) = DAparMax(i)
-                endif
-                ! generate new parameters
-                DAparVal(i) = DAparOldVal(i) + rand*(DAparMax(i)-DAparMin(i))*mcset%search_scale
-                ! if out of bounds, retry with a new random number
-                if(DAparVal(i)>DAparMax(i) .or. DAparVal(i)<DAparMin(i)) cycle
+                do
+                    call random_number(rand_harvest)
+                    rand = rand_harvest - 0.5 
+                    ! Ensure parameter is within bounds
+                    if(DAparOldVal(i) > DAparMax(i) .or. DAparOldVal(i) < DAparMin(i))then
+                        DAparOldVal(i) = DAparMin(i) + rand_harvest*(DAparMax(i)-DAparMin(i))
+                    endif
+                    if(DAparMin(i) .eq. DAparMax(i)) then
+                        DAparOldVal(i) = DAparMax(i)
+                    endif
+                    ! generate new parameters
+                    DAparVal(i) = DAparOldVal(i) + rand*(DAparMax(i)-DAparMin(i))*mcset%search_scale
+                    ! if out of bounds, retry with a new random number
+                    if (DAparVal(i) >= DAparMin(i) .and. DAparVal(i) <= DAparMax(i)) then
+                        exit
+                    else
+                        DAparVal(i) = DAparOldVal(i)
+                    endif
+                enddo
             end do
-
         endif
 
     end subroutine
 
     subroutine cal_cost_function()
         implicit none
-        integer i, iline
+        integer i
         real(8) :: JCost, delta_J(numObsFiles), cs_rand
 
         J_new = 0.
         do i = 1, numObsFiles
             if(mcVarData(i)%existOrNot)then
-                call calculate_cost(mcVarData(i)%obsData(:,4), mcVarData(i)%mdData(:,4),&
-                     mcVarData(i)%obsData(:,5),JCost)
-                J_new(i) = J_new(i) + JCost
+                call calculate_cost(mcVarData(i)%obsData(:,4), mcVarData(i)%mdData(:,4),JCost)
+                J_new(i) = J_new(i) + JCost*100*obsWt(i)
             end if
-            print*, "test_", i,": ", J_new(i) - J_last(i)
+            ! print*, "test_", i,": ", J_new(i) - J_last(i)
+            ! print*, "test_",i,": ",J_new(i)
         enddo
 
-        print*, mcVarData(7)%mdData(1,4),mcVarData(7)%obsData(1,4)
+        ! print*, mcVarData(7)%mdData(1,4),mcVarData(7)%obsData(1,4)
 
         delta_J = J_new - J_last
         call random_number(cs_rand)
@@ -198,9 +206,9 @@ module mcmc
     !     if(nCost .gt. 0) JCost=JCost/real(nCost)
     ! end subroutine
 
-    subroutine calculate_cost(datObs, datMd, stdObs, JCost)
+    subroutine calculate_cost(datObs, datMd, JCost)
         implicit none
-        real(8), intent(in) :: datObs(:), datMd(:), stdObs(:)
+        real(8), intent(in) :: datObs(:), datMd(:)!, stdObs(:)
         real(8) :: JCost, obs_mean, numerator, denominator
         integer :: n, i
         n = size(datObs)
@@ -214,8 +222,10 @@ module mcmc
         if (denominator > 0.0) then
             JCost = (numerator / denominator)
         else
-            JCost = 0
+            ! JCost = 0
+            Jcost = numerator**0.5
         endif
+        ! if(nCost .gt. 0) JCost=JCost/real(nCost)
         return
     end subroutine calculate_cost
 
@@ -227,8 +237,8 @@ module mcmc
         type(site_data_type), intent(inout) :: st
 
         integer :: npar4st, npar4sp
-        integer :: nBuilt_in, ipar, iline, inum, ipft, isimu
-        character(250) :: outfile_mc_ParamSets
+        integer :: nBuilt_in, ipar, inum, ipft, isimu!, iline
+        ! character(250) :: outfile_mc_ParamSets
         character(1200) :: header_line
         integer, allocatable :: rand_number(:)
         real(8), allocatable :: nonBuiltParamsets(:,:), randSelParamsets(:,:)
@@ -273,14 +283,14 @@ module mcmc
         do_out_day  = .True.
         do_out_mon  = .False.
         do_out_yr   = .False.
-        do isimu = 1, mcset%nRand
+        do isimu = 1, 1!mcset%nRand
             write(mc_str_n, "(I0.3)") isimu
-
-            call update_mcParams(randSelParamsets(isimu, :), idxStPar, idxSpPar)
+            ! call update_mcParams(randSelParamsets(isimu, :), idxStPar, idxSpPar)
+            call update_mcParams(totMcParamsets(nUpgraded, :), idxStPar, idxSpPar)
             call update_simuParams() ! update parameters to simulate
 
             call initialize_teco(st)
-            call teco_simu(st, .False.)
+            call teco_simu(st, .True.)
         end do
 
         deallocate(rand_number)
@@ -292,7 +302,7 @@ module mcmc
         implicit none
         integer, dimension(:), intent(inout) :: res_rand
         integer, intent(in) :: min_value, max_value
-        integer :: i, j, temp, range_size, available_numbers
+        integer :: i, j, temp!, range_size, available_numbers
         integer, dimension(max_value - min_value + 1) :: all_numbers
         real(8) :: r
 
@@ -339,6 +349,11 @@ module mcmc
             if (allocated(idxSpPar(i)%idx)) deallocate(idxSpPar(i)%idx)
         enddo
         if(allocated(totMcParamsets)) deallocate(totMcParamsets)
+        if(allocated(DAparVal)) deallocate(DAparVal)
+        if(allocated(DAparMin)) deallocate(DAparMin)
+        if(allocated(DAparMax)) deallocate(DAparMax)
+        if(allocated(DAparOldVal)) deallocate(DAparOldVal)
+        if(allocated(idxStPar))    deallocate(idxStPar)
     end subroutine mcmc_vars_deallocate
     
 end module mcmc

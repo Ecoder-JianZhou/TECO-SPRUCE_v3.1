@@ -31,7 +31,7 @@ eval $(awk -F'=' '
 echo $ENV_BASE_PATH
 export INCLUDE_PATH="$ENV_BASE_PATH/include"
 export LIB_PATH="$ENV_BASE_PATH/lib"
-export LIBS="-I$INCLUDE_PATH -L$LIB_PATH -lnetcdff -lnetcdf"
+export LIBS="-I$INCLUDE_PATH -L$LIB_PATH"
 
 # check gfortran
 if ! command -v $FC &>/dev/null; then
@@ -85,21 +85,24 @@ FLAGS="-g -fbacktrace -Wall -fcheck=all -cpp"
 
 # if USE_NETCDF or not
 NETCDF_FLAG=""
+NETCDF_LIB=""
 if [[ "$USE_NETCDF" == ".true." ]]; then
     NETCDF_FLAG="-DUSE_NETCDF"
+    NETCDF_LIB="-lnetcdff -lnetcdf"
     echo "NETCDF is enabled (USE_NETCDF = .true.)"
 else
     echo "NETCDF is disabled (USE_NETCDF = .false.)"
 fi
 
 export FFLAGS="$FLAGS $MCMC_FLAG $SPINUP_FLAG $NETCDF_FLAG"
+export LLIBS="$LIBS $NETCDF_LIB"
 
 echo "Fortran Compiler: $FC"
 echo "Base Path: $ENV_BASE_PATH"
 echo "Include Path: $INCLUDE_PATH"
 echo "Library Path: $LIB_PATH"
 echo "Flags: $FLAGS"
-echo "Libs: $LIBS"
+echo "Libs: $LLIBS"
 
 echo "Compiling TECO core modules..."
 OBJ_FILES=() # save all ".o" files
@@ -107,7 +110,7 @@ OBJ_FILES=() # save all ".o" files
 for SRC in "${TECO_SRC[@]}"; do
     OBJ="${SRC%.f90}.o"
     echo "Compiling: $SRC -> $OBJ"
-    $FC $FFLAGS -c $SRC -o "$OBJ" $LIBS
+    $FC $FFLAGS -c $SRC -o "$OBJ" $LLIBS
     if [[ $? -ne 0 ]]; then
         echo "Error: Compilation failed for $SRC"
         exit 1
@@ -115,7 +118,7 @@ for SRC in "${TECO_SRC[@]}"; do
     OBJ_FILES+=("$OBJ")
 done
 echo "Linking executable teco-spruce.exe..."
-$FC "${OBJ_FILES[@]}" -o teco-spruce.exe $LIBS
+$FC "${OBJ_FILES[@]}" -o teco-spruce.exe $LLIBS
 if [[ $? -ne 0 ]]; then
     echo "Error: Linking all objects to executable teco-spruce.exe failed!"
     exit 1
