@@ -29,20 +29,20 @@ module mcmc
 
     integer, parameter :: num_steps = 15
     integer, dimension(num_steps) :: nsteps
-    integer, parameter :: istep_1 = 1001, istep_2 = 2001, istep_3 = 3001 ! all, tree, shrub
-    integer, parameter :: istep_4 = 4001, istep_5 = 5001, istep_6 = 6001 ! sphag, soil, annual ch4+Rh
-    integer, parameter :: istep_7 = 7001, istep_8 = 8001, istep_9 = 9001 ! annual Tree, Shrub, Sphag
-    integer, parameter :: istep_10 = 10001 
-    integer, parameter :: istep_11 = 11001, istep_12 = 12001, istep_13 = 13001
+    ! integer, parameter :: istep_1 = 1001, istep_2 = 2001, istep_3 = 3001 ! all, tree, shrub
+    ! integer, parameter :: istep_4 = 4001, istep_5 = 5001, istep_6 = 6001 ! sphag, soil, annual ch4+Rh
+    ! integer, parameter :: istep_7 = 7001, istep_8 = 8001, istep_9 = 9001 ! annual Tree, Shrub, Sphag
+    ! integer, parameter :: istep_10 = 10001 
+    ! integer, parameter :: istep_11 = 11001, istep_12 = 12001, istep_13 = 13001
+    ! integer, parameter :: istep_14 = 14001, istep_15 = 15001
+
+
+    integer, parameter :: istep_1 = 4001, istep_2 = 8001, istep_3 = 12001 ! all, tree, shrub
+    integer, parameter :: istep_4 = 16001, istep_5 = 20001, istep_6 = 24001 ! sphag, soil, annual ch4+Rh
+    integer, parameter :: istep_7 = 28001, istep_8 = 32001, istep_9 = 36001 ! annual Tree, Shrub, Sphag
+    integer, parameter :: istep_10 = 40001 
+    integer, parameter :: istep_11 = 44001, istep_12 = 12001, istep_13 = 13001
     integer, parameter :: istep_14 = 14001, istep_15 = 15001
-
-
-    ! integer, parameter :: istep_1 = 21, istep_2 = 41, istep_3 = 61 ! all, tree, shrub
-    ! integer, parameter :: istep_4 = 81, istep_5 = 101, istep_6 = 121 ! sphag, soil, annual ch4+Rh
-    ! integer, parameter :: istep_7 = 141, istep_8 = 161, istep_9 = 181 ! annual Tree, Shrub, Sphag
-    ! integer, parameter :: istep_10 = 201 
-    ! integer, parameter :: istep_11 = 221, istep_12 = 241, istep_13 = 261
-    ! integer, parameter :: istep_14 = 281, istep_15 = 301
     
 
     contains
@@ -63,7 +63,7 @@ module mcmc
         scale_sel_params = 0.1
         ! 2. do cylces
         ! nDAsimu = istep_4-1 !mcset%nDAsimu
-        nDAsimu = 200
+        nDAsimu = 50000
         nsteps = (/ istep_1, istep_2, istep_3, istep_4, istep_5, &
                     istep_6, istep_7, istep_8, istep_9, istep_10, &
                     istep_11, istep_12, istep_13, istep_14, istep_15/)
@@ -84,598 +84,150 @@ module mcmc
             ! update mcparams
             if(iDAsimu > 1) call generate_new_parameters()
             temp_new_parval = DAparVal
-            DAparVal = DAparOldVal
-
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !         1000, 0, 100, 100, 100, 10, &
-            !         10, 10, 10, 10, 10, 10, 0, 0, 10,100]
-            ! DAparVal(141) = temp_new_parval(141)
-            ! DAparVal(149) = temp_new_parval(149)
-            ! DAparVal(158) = temp_new_parval(158)
-
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !         100, 0, 1000, 100, 100, 10, &
-            !         10, 10, 10, 10, 10, 10, 0, 0, 10,5000]
-            ! DAparVal(61:66)   = temp_new_parval(61:66)
-            ! DAparVal(68:70)   = temp_new_parval(68:70)
-            ! DAparVal(72:74)   = temp_new_parval(72:74)
-            ! DAparVal(134:158) = temp_new_parval(134:158)
-
-            ! ! DAparVal(61) = temp_new_parval(61)
-            ! ! DAparVal(63) = temp_new_parval(63)
-            ! ! ! DAparVal(68) = temp_new_parval(68)
-            ! ! ! DAparVal(72) = temp_new_parval(72)
-            ! DAparVal(80) = temp_new_parval(80)
+            DAparVal = DAparOldVal            
 
 
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !         100, 0, 100, 100, 100, 10, &
-            !         10, 10, 10, 10, 10, 10, 0, 0, 10,1000]
-            ! DAparVal(134:141) = temp_new_parval(134:141)
-
-
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !         100, 0, 10, 100, 1000, 10, &
-            !         10, 10, 10, 10, 10, 10, 0, 0, 10,100]
-            ! DAparVal(69) = temp_new_parval(69)
-
-            ! ! tree npp
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              2000, 0, 1000, 2000, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 10,2000]
-            !     DAparVal(63:66)   = temp_new_parval(63:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:74)   = temp_new_parval(72:74)
-            !     DAparVal(134:141) = temp_new_parval(134:141)
-            !     ! npp tree
-            !     DAparVal(142:150) = temp_new_parval(142:150)
-            !     DAparVal(151:158) = temp_new_parval(151:158)
-
-            ! ! tree
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              1000, 0, 1000, 2000, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 10,2000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:75)   = temp_new_parval(72:75)
-            !     DAparVal(77)      = temp_new_parval(77)
-            !     DAparVal(80:84)   = temp_new_parval(80:84)
-            !     DAparVal(86:158)  = temp_new_parval(86:158)
-
-            ! ! P11
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !         500, 0, 10, 100, 10, 10, &
-            !         10, 10, 10, 10, 10, 10, 0, 0, 10,500]
-            ! ! DAparVal(89)        = temp_new_parval(89)
-            ! ! DAparVal(97)        = temp_new_parval(97)
-            ! ! DAparVal(113)       = temp_new_parval(113)
-            ! ! DAparVal(121)       = temp_new_parval(121)
-            ! ! DAparVal(129)       = temp_new_parval(129)
-            ! ! DAparVal(137)       = temp_new_parval(137)
-            ! ! DAparVal(145)       = temp_new_parval(145)
-            ! ! DAparVal(154)       = temp_new_parval(154)
-            ! ! DAparVal(140:141)   = temp_new_parval(140:141)
-            ! ! DAparVal(148:149)   = temp_new_parval(148:149)
-            ! ! DAparVal(157:158)   = temp_new_parval(157:158)
-            ! DAparVal(141) = temp_new_parval(141)
-            ! DAparVal(158) = temp_new_parval(158)
+            if(iDAsimu < istep_1) then ! 1000
+                ! shrub 
+                obsWt = [0, 1000, 0, 100, 1000, 1000, 10, 10, & 
+                         10, 0, 10, 10, 10, 10, &
+                         10, 100, 100, 100, 10, 100, 0, 0, 1000,10]
+                DAparVal(159:164) = temp_new_parval(159:164)
+                DAparVal(166:168) = temp_new_parval(166:168)
+                DAparVal(170:173) = temp_new_parval(170:173)
+                DAparVal(175)     = temp_new_parval(175)
+                DAparVal(178:182) = temp_new_parval(178:182)
+                DAparVal(184:256) = temp_new_parval(184:256)
+            elseif(iDAsimu < istep_2) then ! 1000
+                ! tree
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         1000, 0, 1000, 1000, 100, 10, &
+                         10, 100, 100, 100, 10, 10, 0, 0, 10,1000]
+                DAparVal(61:66)   = temp_new_parval(61:66)
+                DAparVal(68:70)   = temp_new_parval(68:70)
+                DAparVal(72:75)   = temp_new_parval(72:75)
+                DAparVal(77)      = temp_new_parval(77)
+                DAparVal(80:84)   = temp_new_parval(80:84)
+                DAparVal(86:158)  = temp_new_parval(86:158)
+            elseif(iDAsimu < istep_3) then ! 1000
+                ! sphagnum 
+                obsWt = [0, 10, 0, 10, 10, 10, 1000, 1000, & 
+                         10, 0, 10, 10, 10, 10, &
+                         10, 100, 100, 100, 10, 10, 0, 0, 10,10]
+                DAparVal(257:262)   = temp_new_parval(257:262)
+                DAparVal(264:266)   = temp_new_parval(264:266)
+                DAparVal(268:271)   = temp_new_parval(268:271)
+                DAparVal(273)       = temp_new_parval(273)
+                DAparVal(276:280)   = temp_new_parval(276:280)
+                DAparVal(282:354)   = temp_new_parval(282:354)
+            elseif(iDAsimu < istep_4) then ! 1000
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         10, 0, 10, 10, 10, 10, &
+                         100, 1000, 1000, 1000, 100, 10, 0, 0, 10,10]
+                ! er
+                DAparVal(170:172) = temp_new_parval(170:172)
+                DAparVal(184:256) = temp_new_parval(184:256)
+                DAparVal(268:270) = temp_new_parval(268:270)
+                DAparVal(282:354) = temp_new_parval(282:354)
+                ! gpp shrub
+                DAparVal(184:199) = temp_new_parval(184:199)
+                DAparVal(208:231) = temp_new_parval(208:231)
+                DAparVal(240:248) = temp_new_parval(240:248)
+               ! gpp sphagnum
+                DAparVal(282:297) = temp_new_parval(282:297)
+                DAparVal(306:329) = temp_new_parval(306:329)
+                DAparVal(338:346) = temp_new_parval(338:346) ! s_npp
+            elseif(iDAsimu < istep_5)then ! 1000
+                ! shrub npp
+                obsWt = [0, 1000, 0, 100, 100, 100, 10, 10, & 
+                         10,  0, 10, 10, 10, 10, &
+                         10, 100, 100, 100, 10, 100, 0, 0, 1000,10]
+                DAparVal(161:164) = temp_new_parval(161:164)
+                DAparVal(166:168) = temp_new_parval(166:168)
+                DAparVal(170:172) = temp_new_parval(170:172)
+                DAparVal(232:239) = temp_new_parval(232:239)
+                DAparVal(240:248) = temp_new_parval(240:248)
+                DAparVal(249:256) = temp_new_parval(249:256)
+            elseif(iDAsimu < istep_6)then ! 1000
+                ! tree npp
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         1000, 0, 1000, 100, 100, 10, &
+                         10, 100, 100, 100, 10, 10, 0, 0, 10,1000]
+                DAparVal(63:66)   = temp_new_parval(63:66)
+                DAparVal(68:70)   = temp_new_parval(68:70)
+                DAparVal(72:74)   = temp_new_parval(72:74)
+                DAparVal(134:141) = temp_new_parval(134:141)
+                ! npp tree
+                DAparVal(142:150) = temp_new_parval(142:150)
+                DAparVal(151:158) = temp_new_parval(151:158)
+            elseif(iDAsimu < istep_7)then 
+                ! bnpp shrub
+                obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
+                         100, 0, 10, 10, 10, 10, &
+                         10, 10, 10, 10, 10, 10, 0, 0, 1000,10]
             
+                DAparVal(232:256) = temp_new_parval(232:256)
 
-            ! ! bnpp tree
-            !     obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !              1000, 0, 1000, 2000, 500, 10, &
-            !              10, 10, 10, 10, 10, 10, 0, 0, 10,3000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:74)   = temp_new_parval(72:74)
-            !     DAparVal(134:158) = temp_new_parval(134:158)
-            !     ! DAparVal(80) = temp_new_parval(80)
-
-            ! obsWt = [0, 800, 0, 10, 100, 100, 800, 800, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              100, 1000, 1000, 1000, 100, 100, 0, 0, 2000,10]
-            ! ! !     ! shrub cleaf cstem
-            ! ! !     ! DAparVal(264:266) = temp_new_parval(264:266)
-            ! !     ! er
-            ! !     DAparVal(170:172) = temp_new_parval(170:172)
-            ! !     DAparVal(184:256) = temp_new_parval(184:256)
-            ! !     ! DAparVal(268:270) = temp_new_parval(268:270)
-            ! !     ! DAparVal(282:354) = temp_new_parval(282:354)
-            ! !     ! gpp shrub
-            ! !     DAparVal(184:199) = temp_new_parval(184:199)
-            ! !     DAparVal(208:231) = temp_new_parval(208:231)
-            ! !     DAparVal(240:248) = temp_new_parval(240:248)
-            ! !     ! ! bnpp shrub 
-            ! !     ! DAparVal(232:256) = temp_new_parval(232:256)
-            ! !     ! DAparVal(159:164) = temp_new_parval(159:164)
-            ! !     ! DAparVal(166:168) = temp_new_parval(166:168)
-            ! !     ! DAparVal(170:172) = temp_new_parval(170:172)
-
-            ! !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            ! !              10, 0, 10, 10, 10, 10, &
-            ! !              100, 1000, 1000, 1000, 100, 10, 0, 0, 10,10]
-            !     ! er
-            !     DAparVal(170:172) = temp_new_parval(170:172)
-            !     DAparVal(184:256) = temp_new_parval(184:256)
-            !     DAparVal(268:270) = temp_new_parval(268:270)
-            !     DAparVal(282:354) = temp_new_parval(282:354)
-            !     ! gpp shrub
-            !     DAparVal(184:199) = temp_new_parval(184:199)
-            !     DAparVal(208:231) = temp_new_parval(208:231)
-            !     DAparVal(240:248) = temp_new_parval(240:248)
-            !    ! gpp sphagnum
-            !     DAparVal(282:297) = temp_new_parval(282:297)
-            !     DAparVal(306:329) = temp_new_parval(306:329)
-            !     DAparVal(338:346) = temp_new_parval(338:346) ! s_npp
-
-
-            ! ! P11
-            ! obsWt = [0, 10, 0, 10, 10, 100, 10, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(167) = temp_new_parval(167)
-            ! DAparVal(179) = temp_new_parval(179)
-
-            ! ! P20, P11, P17 P16
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !          100, 0, 1000, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,1000]
-
-            ! DAparVal(61) = temp_new_parval(61)
-            ! DAparVal(63) = temp_new_parval(63)
-            ! ! DAparVal(68) = temp_new_parval(68)
-            ! ! DAparVal(80) = temp_new_parval(80)
-
-            ! ! P10 anpp shrub; 17, 21
-            ! obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(187) = temp_new_parval(187)
-            ! DAparVal(191) = temp_new_parval(191)
-            ! DAparVal(195) = temp_new_parval(195)
-            ! DAparVal(199) = temp_new_parval(199)
-            ! DAparVal(211) = temp_new_parval(211)
-            ! DAparVal(215) = temp_new_parval(215)
-            ! DAparVal(219) = temp_new_parval(219)
-            ! DAparVal(223) = temp_new_parval(223)
-            ! DAparVal(227) = temp_new_parval(227)
-            ! DAparVal(231) = temp_new_parval(231)
-            ! DAparVal(235) = temp_new_parval(235)
-            ! DAparVal(239) = temp_new_parval(239)
-            ! DAparVal(243) = temp_new_parval(243)
-            ! DAparVal(247) = temp_new_parval(247)
-            ! DAparVal(252) = temp_new_parval(252)
-            ! DAparVal(256) = temp_new_parval(256)
-
-            ! DAparVal(246) = temp_new_parval(246)
-
-            ! P19 anpp tree 2021 
-            obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-                     200, 0, 10, 10, 10, 10, &
-                     10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            DAparVal(86:158) = temp_new_parval(86:158)
-
-
-
-            ! ! P04 anpp tree 18 year
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !          100, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(90)    = temp_new_parval(90)
-            ! DAparVal(98)    = temp_new_parval(98)
-            ! DAparVal(114)   = temp_new_parval(114)
-            ! DAparVal(122)   = temp_new_parval(122)
-            ! DAparVal(130)   = temp_new_parval(130)
-            ! DAparVal(138)   = temp_new_parval(138)
-            ! DAparVal(146)   = temp_new_parval(146)
-            ! DAparVal(155)   = temp_new_parval(155)
-
-            ! ! P04 anpp tree 18 year
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !          100, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(89)    = temp_new_parval(89)
-            ! DAparVal(97)    = temp_new_parval(97)
-            ! DAparVal(113)   = temp_new_parval(113)
-            ! DAparVal(121)   = temp_new_parval(121)
-            ! DAparVal(129)   = temp_new_parval(129)
-            ! DAparVal(137)   = temp_new_parval(137)
-            ! DAparVal(145)   = temp_new_parval(145)
-            ! DAparVal(154)   = temp_new_parval(154)
-
-            ! ! P20 21year sphagnum anpp
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(289) = temp_new_parval(289)
-            ! DAparVal(297) = temp_new_parval(297)
-            ! DAparVal(313) = temp_new_parval(313)
-            ! DAparVal(321) = temp_new_parval(321)
-            ! DAparVal(329) = temp_new_parval(329)
-            ! DAparVal(337) = temp_new_parval(337)
-            ! DAparVal(345) = temp_new_parval(345)
-            ! DAparVal(354) = temp_new_parval(354)
-
-            ! ! P20 2017year: 4
-            ! obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 100, 100, 100, 10, 10, 0, 0, 10,10]
-            ! DAparVal(187) = temp_new_parval(187)
-            ! DAparVal(195) = temp_new_parval(195)
-            ! DAparVal(211) = temp_new_parval(211)
-            ! DAparVal(219) = temp_new_parval(219)
-            ! DAparVal(227) = temp_new_parval(227)
-            ! DAparVal(235) = temp_new_parval(235)
-            ! DAparVal(243) = temp_new_parval(243)
-            ! DAparVal(252) = temp_new_parval(252)
-
-            ! ! P13 2018year: 5
-            ! obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 100, 100, 100, 10, 10, 0, 0, 10,10]
-            ! DAparVal(188) = temp_new_parval(188)
-            ! DAparVal(196) = temp_new_parval(196)
-            ! DAparVal(212) = temp_new_parval(212)
-            ! DAparVal(220) = temp_new_parval(220)
-            ! DAparVal(228) = temp_new_parval(228)
-            ! DAparVal(236) = temp_new_parval(236)
-            ! DAparVal(244) = temp_new_parval(244)
-            ! DAparVal(253) = temp_new_parval(253)
-
-            ! ! P19 2018 year: 5
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 100, 100, 100, 10, 10, 0, 0, 10,10]
-            ! DAparVal(286) = temp_new_parval(286)
-            ! DAparVal(294) = temp_new_parval(294)
-            ! DAparVal(310) = temp_new_parval(310)
-            ! DAparVal(318) = temp_new_parval(318)
-            ! DAparVal(326) = temp_new_parval(326)
-            ! DAparVal(334) = temp_new_parval(334)
-            ! DAparVal(342) = temp_new_parval(342)
-            ! DAparVal(351) = temp_new_parval(351)
-
-
-            ! ! P06 18, 19, 21year sphagnum anpp
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(286:287) = temp_new_parval(286:287)
-            ! DAparVal(294:295) = temp_new_parval(294:295)
-            ! DAparVal(310:311) = temp_new_parval(310:311)
-            ! DAparVal(318:319) = temp_new_parval(318:319)
-            ! DAparVal(326:327) = temp_new_parval(326:327)
-            ! DAparVal(334:335) = temp_new_parval(334:335)
-            ! DAparVal(342:343) = temp_new_parval(342:343)
-            ! DAparVal(351:352) = temp_new_parval(351:352)
-
-            ! DAparVal(289) = temp_new_parval(289)
-            ! DAparVal(297) = temp_new_parval(297)
-            ! DAparVal(313) = temp_new_parval(313)
-            ! DAparVal(321) = temp_new_parval(321)
-            ! DAparVal(329) = temp_new_parval(329)
-            ! DAparVal(337) = temp_new_parval(337)
-            ! DAparVal(345) = temp_new_parval(345)
-            ! DAparVal(354) = temp_new_parval(354)
-
-            ! ! P11 17, 19, 20year sphagnum anpp
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(285:287) = temp_new_parval(285:287)
-            ! DAparVal(293:295) = temp_new_parval(293:295)
-            ! DAparVal(309:311) = temp_new_parval(309:311)
-            ! DAparVal(317:319) = temp_new_parval(317:319)
-            ! DAparVal(325:327) = temp_new_parval(325:327)
-            ! DAparVal(333:335) = temp_new_parval(333:335)
-            ! DAparVal(341:343) = temp_new_parval(341:343)
-            ! DAparVal(350:352) = temp_new_parval(350:352)
-
-            ! ! ! P11 16 year sphagnum anpp
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(284) = temp_new_parval(284)
-            ! DAparVal(292) = temp_new_parval(292)
-            ! DAparVal(308) = temp_new_parval(308)
-            ! DAparVal(316) = temp_new_parval(316)
-            ! DAparVal(324) = temp_new_parval(324)
-            ! DAparVal(332) = temp_new_parval(332)
-            ! DAparVal(340) = temp_new_parval(340)
-            ! DAparVal(349) = temp_new_parval(349)
-
-
-            ! ! P10 and p04 anppshrub 21 year
-            ! obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 100,10]
-            ! DAparVal(191)   = temp_new_parval(191)
-            ! DAparVal(199)   = temp_new_parval(199)
-            ! DAparVal(215)   = temp_new_parval(215)
-            ! DAparVal(223)   = temp_new_parval(223)
-            ! DAparVal(231)   = temp_new_parval(231)
-            ! DAparVal(239)   = temp_new_parval(239)
-            ! DAparVal(248)   = temp_new_parval(248)
-            ! DAparVal(256)   = temp_new_parval(256)
-
-            ! ! P19 anpptree 21year
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !          100, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(93)    = temp_new_parval(93)
-            ! DAparVal(101)   = temp_new_parval(101)
-            ! DAparVal(117)   = temp_new_parval(117)
-            ! DAparVal(125)   = temp_new_parval(125)
-            ! DAparVal(133)   = temp_new_parval(133)
-            ! DAparVal(141)   = temp_new_parval(141)
-            ! DAparVal(150)   = temp_new_parval(150)
-            ! DAparVal(158)   = temp_new_parval(158)
-
-            ! ! P19 sphagnum
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(286) = temp_new_parval(286)
-            ! DAparVal(294) = temp_new_parval(294)
-            ! DAparVal(310) = temp_new_parval(310)
-            ! DAparVal(318) = temp_new_parval(318)
-            ! DAparVal(326) = temp_new_parval(326)
-            ! DAparVal(334) = temp_new_parval(334)
-            ! DAparVal(342) = temp_new_parval(342)
-            ! DAparVal(351) = temp_new_parval(351)
-
-
-            ! ! P04 sphagnum
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(284) = temp_new_parval(284)
-            ! DAparVal(292) = temp_new_parval(292)
-            ! DAparVal(308) = temp_new_parval(308)
-            ! DAparVal(316) = temp_new_parval(316)
-            ! DAparVal(324) = temp_new_parval(324)
-            ! DAparVal(332) = temp_new_parval(332)
-            ! DAparVal(340) = temp_new_parval(340)
-            ! DAparVal(349) = temp_new_parval(349)
-
-
-            ! ! P06 sphagnum
-            ! obsWt = [0, 10, 0, 10, 10, 10, 100, 100, & 
-            !          10, 0, 10, 10, 10, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(286) = temp_new_parval(286)
-            ! DAparVal(289) = temp_new_parval(289)
-            ! DAparVal(294) = temp_new_parval(294)
-            ! DAparVal(297) = temp_new_parval(297)
-            ! DAparVal(310) = temp_new_parval(310)
-            ! DAparVal(313) = temp_new_parval(313)
-            ! DAparVal(318) = temp_new_parval(318)
-            ! DAparVal(321) = temp_new_parval(321)
-            ! DAparVal(326) = temp_new_parval(326)
-            ! DAparVal(329) = temp_new_parval(329)
-            ! DAparVal(334) = temp_new_parval(334)
-            ! DAparVal(337) = temp_new_parval(337)
-            ! DAparVal(342) = temp_new_parval(342)
-            ! DAparVal(346) = temp_new_parval(346)
-            ! DAparVal(351) = temp_new_parval(351)
-            ! DAparVal(354) = temp_new_parval(354)
-
-            ! if(iDAsimu<1001)then
-            !     ! bnpp shrub
-            !     obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !              100, 0, 10, 10, 10, 10, &
-            !              10, 10, 10, 10, 10, 10, 0, 0, 1000,10]
-            
-            !     DAparVal(232:256) = temp_new_parval(232:256)
-
-            !     DAparVal(159:164) = temp_new_parval(159:164)
-            !     DAparVal(166:168) = temp_new_parval(166:168)
-            !     DAparVal(170:172) = temp_new_parval(170:172)
-            ! elseif(iDAsimu < 2001)then 
-            !     ! bnpp tree
-            !     obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !              100, 0, 10, 10, 10, 10, &
-            !              10, 10, 10, 10, 10, 10, 0, 0, 10,1000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:74)   = temp_new_parval(72:74)
-            !     DAparVal(134:158) = temp_new_parval(134:158)
-            ! endif
-
-            ! ! P19 tree cPlant
-            ! obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !          10, 0, 10, 10, 100, 10, &
-            !          10, 10, 10, 10, 10, 10, 0, 0, 10,10]
-            ! DAparVal(68:70) = temp_new_parval(68:70)
-            ! DAparVal(80:82) = temp_new_parval(80:82)
-
-            
-
-            ! if(iDAsimu < istep_1) then ! 500
-            !     ! shrub bnpp
-            !     obsWt = [0, 1000, 0, 10, 10, 10, 100, 100, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 100000,100]
-            !     DAparVal(159:164) = temp_new_parval(159:164)
-            !     DAparVal(166:168) = temp_new_parval(166:168)
-            !     DAparVal(170:173) = temp_new_parval(170:173)
-            !     DAparVal(175)     = temp_new_parval(175)
-            !     DAparVal(178:182) = temp_new_parval(178:182)
-            !     DAparVal(184:256) = temp_new_parval(184:256)
-            ! elseif(iDAsimu < istep_2) then !2000
-            !     ! tree bnpp
-            !     obsWt = [0, 100, 0, 10, 10, 10, 100, 100, & 
-            !              1000, 0, 100, 100, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 100,100000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:75)   = temp_new_parval(72:75)
-            !     DAparVal(77)      = temp_new_parval(77)
-            !     DAparVal(80:84)   = temp_new_parval(80:84)
-            !     DAparVal(86:158)  = temp_new_parval(86:158)
-            ! elseif(iDAsimu < istep_3)then ! 1000
-            !     ! shrub and tree bnpp
-            !     obsWt = [0, 1000, 0, 10, 10, 10, 100, 100, & 
-            !              1000, 0, 100, 100, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 100000,100000]
-            !     DAparVal(232:239) = temp_new_parval(232:239)
-            !     DAparVal(134:141) = temp_new_parval(134:141)
-            ! elseif(iDAsimu < istep_4)then ! 1000
-            !     ! shrub cleaf and cstem
-            !     obsWt = [0, 1000, 0, 1000, 100000, 100000, 100, 100, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 100000,100]
-            !     DAparVal(264:266) = DAparVal(264:266)
-            ! elseif(iDAsimu < istep_5)then ! 1000
-            !     ! tree c plant
-            !     obsWt = [0, 100, 0, 10, 100, 100, 100, 100, & 
-            !              1000, 0, 100000, 100000, 100000, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 100,100000]
-            !     DAparVal(68:70) = temp_new_parval(68:70)
-            ! elseif(iDAsimu < istep_6)then ! 1000
-
-
-            ! if(iDAsimu < istep_1) then ! 1000
-            !     ! shrub 
-            !     obsWt = [0, 1000, 0, 100, 1000, 1000, 10, 10, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              10, 100, 100, 100, 10, 100, 0, 0, 1000,10]
-            !     DAparVal(159:164) = temp_new_parval(159:164)
-            !     DAparVal(166:168) = temp_new_parval(166:168)
-            !     DAparVal(170:173) = temp_new_parval(170:173)
-            !     DAparVal(175)     = temp_new_parval(175)
-            !     DAparVal(178:182) = temp_new_parval(178:182)
-            !     DAparVal(184:256) = temp_new_parval(184:256)
-            ! elseif(iDAsimu < istep_2) then ! 1000
-            !     ! tree
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              1000, 0, 1000, 1000, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 10,1000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:75)   = temp_new_parval(72:75)
-            !     DAparVal(77)      = temp_new_parval(77)
-            !     DAparVal(80:84)   = temp_new_parval(80:84)
-            !     DAparVal(86:158)  = temp_new_parval(86:158)
-            ! elseif(iDAsimu < istep_3) then ! 1000
-            !     ! sphagnum 
-            !     obsWt = [0, 10, 0, 10, 10, 10, 1000, 1000, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 10,10]
-            !     DAparVal(257:262)   = temp_new_parval(257:262)
-            !     DAparVal(264:266)   = temp_new_parval(264:266)
-            !     DAparVal(268:271)   = temp_new_parval(268:271)
-            !     DAparVal(273)       = temp_new_parval(273)
-            !     DAparVal(276:280)   = temp_new_parval(276:280)
-            !     DAparVal(282:354)   = temp_new_parval(282:354)
-            ! elseif(iDAsimu < istep_4) then ! 1000
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              10, 0, 10, 10, 10, 10, &
-            !              100, 1000, 1000, 1000, 100, 10, 0, 0, 10,10]
-            !     ! er
-            !     DAparVal(170:172) = temp_new_parval(170:172)
-            !     DAparVal(184:256) = temp_new_parval(184:256)
-            !     DAparVal(268:270) = temp_new_parval(268:270)
-            !     DAparVal(282:354) = temp_new_parval(282:354)
-            !     ! gpp shrub
-            !     DAparVal(184:199) = temp_new_parval(184:199)
-            !     DAparVal(208:231) = temp_new_parval(208:231)
-            !     DAparVal(240:248) = temp_new_parval(240:248)
-            !    ! gpp sphagnum
-            !     DAparVal(282:297) = temp_new_parval(282:297)
-            !     DAparVal(306:329) = temp_new_parval(306:329)
-            !     DAparVal(338:346) = temp_new_parval(338:346) ! s_npp
-            ! elseif(iDAsimu < istep_5)then ! 1000
-            !     ! shrub npp
-            !     obsWt = [0, 1000, 0, 100, 100, 100, 10, 10, & 
-            !              10,  0, 10, 10, 10, 10, &
-            !              10, 100, 100, 100, 10, 100, 0, 0, 1000,10]
-            !     DAparVal(161:164) = temp_new_parval(161:164)
-            !     DAparVal(166:168) = temp_new_parval(166:168)
-            !     DAparVal(170:172) = temp_new_parval(170:172)
-            !     DAparVal(232:239) = temp_new_parval(232:239)
-            !     DAparVal(240:248) = temp_new_parval(240:248)
-            !     DAparVal(249:256) = temp_new_parval(249:256)
-            ! elseif(iDAsimu < istep_6)then ! 1000
-            !     ! tree npp
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              1000, 0, 1000, 100, 100, 10, &
-            !              10, 100, 100, 100, 10, 10, 0, 0, 10,1000]
-            !     DAparVal(63:66)   = temp_new_parval(63:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:74)   = temp_new_parval(72:74)
-            !     DAparVal(134:141) = temp_new_parval(134:141)
-            !     ! npp tree
-            !     DAparVal(142:150) = temp_new_parval(142:150)
-            !     DAparVal(151:158) = temp_new_parval(151:158)
-            ! elseif(iDAsimu < istep_7)then 
-            !     ! bnpp shrub
-            !     obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !              100, 0, 10, 10, 10, 10, &
-            !              10, 10, 10, 10, 10, 10, 0, 0, 1000,10]
-            
-            !     DAparVal(232:256) = temp_new_parval(232:256)
-
-            !     DAparVal(159:164) = temp_new_parval(159:164)
-            !     DAparVal(166:168) = temp_new_parval(166:168)
-            !     DAparVal(170:172) = temp_new_parval(170:172)
-            ! elseif(iDAsimu < istep_8)then 
-            !     ! bnpp tree
-            !     obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
-            !              100, 0, 10, 10, 10, 10, &
-            !              10, 10, 10, 10, 10, 10, 0, 0, 10,1000]
-            !     DAparVal(61:66)   = temp_new_parval(61:66)
-            !     DAparVal(68:70)   = temp_new_parval(68:70)
-            !     DAparVal(72:74)   = temp_new_parval(72:74)
-            !     DAparVal(134:158) = temp_new_parval(134:158)
+                DAparVal(159:164) = temp_new_parval(159:164)
+                DAparVal(166:168) = temp_new_parval(166:168)
+                DAparVal(170:172) = temp_new_parval(170:172)
+            elseif(iDAsimu < istep_8)then 
+                ! bnpp tree
+                obsWt = [0, 100, 0, 10, 10, 10, 10, 10, & 
+                         100, 0, 10, 10, 10, 10, &
+                         10, 10, 10, 10, 10, 10, 0, 0, 10,1000]
+                DAparVal(61:66)   = temp_new_parval(61:66)
+                DAparVal(68:70)   = temp_new_parval(68:70)
+                DAparVal(72:74)   = temp_new_parval(72:74)
+                DAparVal(134:158) = temp_new_parval(134:158)
                 
-            ! elseif(iDAsimu < istep_9)then ! 1000
-                ! ! sphagnum npp
-                ! obsWt = [0, 10, 0, 10, 10, 10, 1000, 1000, & 
-                !          10, 0, 10, 10, 10, 10, &
-                !          10, 100, 100, 100, 10, 10, 0, 0, 10,10]
-                ! DAparVal(259:262) = temp_new_parval(259:262)
-                ! DAparVal(264:266) = temp_new_parval(264:266)
-                ! DAparVal(268:270) = temp_new_parval(268:270)
-                ! DAparVal(330:337) = temp_new_parval(330:337)
-                ! DAparVal(338:346) = temp_new_parval(338:346)
-                ! DAparVal(347:354) = temp_new_parval(347:354)
+            elseif(iDAsimu < istep_9)then ! 1000
+                ! sphagnum npp
+                obsWt = [0, 10, 0, 10, 10, 10, 1000, 1000, & 
+                         10, 0, 10, 10, 10, 10, &
+                         10, 100, 100, 100, 10, 10, 0, 0, 10,10]
+                DAparVal(259:262) = temp_new_parval(259:262)
+                DAparVal(264:266) = temp_new_parval(264:266)
+                DAparVal(268:270) = temp_new_parval(268:270)
+                DAparVal(330:337) = temp_new_parval(330:337)
+                DAparVal(338:346) = temp_new_parval(338:346)
+                DAparVal(347:354) = temp_new_parval(347:354)
 
-            ! elseif(iDAsimu < istep_10)then ! 1000
-            !     ! soil
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              10, 0, 10, 10, 10, 1000, &
-            !              100, 100, 100, 100, 100, 10, 0, 0, 10,10]
-            !     DAparVal(1:5)   = temp_new_parval(1:5)
-            !     DAparVal(7:15)  = temp_new_parval(7:15)
-            !     DAparVal(17:22) = temp_new_parval(17:22)
-            !     DAparVal(23:25) = temp_new_parval(23:25)
-            !     DAparVal(26)    = temp_new_parval(26)
-            !     DAparVal(27:28) = temp_new_parval(27:28)
-            !     DAparVal(29:60) = temp_new_parval(29:60)
-            ! elseif(iDAsimu < istep_11) then
-            !     ! CH4 and Rh
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              10, 0, 10, 10, 10, 100, &
-            !              100000, 100, 100, 100, 1000000, 10, 0, 0, 10,10]
-            !     DAparVal(1:14)  = temp_new_parval(1:14)
-            !     ! DAparVal(15:22) = temp_new_parval(15:22)
-            !     DAparVal(26)    = temp_new_parval(26)
-            !     ! DAparVal(29:44) = temp_new_parval(29:44)
-            !     DAparVal(29:52) = temp_new_parval(29:52)
-            !     ! DAparVal(45)    = temp_new_parval(45)
-            !     ! DAparVal(53)    = temp_new_parval(53)
+            elseif(iDAsimu < istep_10)then ! 1000
+                ! soil
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         10, 0, 10, 10, 10, 1000, &
+                         100, 100, 100, 100, 100, 10, 0, 0, 10,10]
+                DAparVal(1:5)   = temp_new_parval(1:5)
+                DAparVal(7:15)  = temp_new_parval(7:15)
+                DAparVal(17:22) = temp_new_parval(17:22)
+                DAparVal(23:25) = temp_new_parval(23:25)
+                DAparVal(26)    = temp_new_parval(26)
+                DAparVal(27:28) = temp_new_parval(27:28)
+                DAparVal(29:60) = temp_new_parval(29:60)
+            elseif(iDAsimu < istep_11) then
+                ! CH4 and Rh
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         10, 0, 10, 10, 10, 100, &
+                         100000, 100, 100, 100, 1000000, 10, 0, 0, 10,10]
+                DAparVal(1:14)  = temp_new_parval(1:14)
+                ! DAparVal(15:22) = temp_new_parval(15:22)
+                DAparVal(26)    = temp_new_parval(26)
+                ! DAparVal(29:44) = temp_new_parval(29:44)
+                DAparVal(29:52) = temp_new_parval(29:52)
+                ! DAparVal(45)    = temp_new_parval(45)
+                ! DAparVal(53)    = temp_new_parval(53)
                 
-            ! else
-            !     ! CH4 and Rh
-            !     obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
-            !              10, 0, 10, 10, 10, 100, &
-            !              10000, 100, 100, 100, 10000, 10, 0, 0, 10,10]
-            !     DAparVal(15:22) = temp_new_parval(15:22)
-            !     DAparVal(26)    = temp_new_parval(26)
-            !     DAparVal(29:52) = temp_new_parval(29:52)
+            else
+                ! CH4 and Rh
+                obsWt = [0, 10, 0, 10, 10, 10, 10, 10, & 
+                         10, 0, 10, 10, 10, 100, &
+                         10000, 100, 100, 100, 10000, 10, 0, 0, 10,10]
+                DAparVal(15:22) = temp_new_parval(15:22)
+                DAparVal(26)    = temp_new_parval(26)
+                DAparVal(29:52) = temp_new_parval(29:52)
                 
-            ! endif
+            endif
 
             
             ! make sure the consistent cost function results if changing the weights
@@ -722,7 +274,7 @@ module mcmc
 
 
             search_scale = search_scale * (1.0 + 0.01*(upgraded_rate - 0.25))
-            search_scale = max(0.0001, min(0.5, search_scale))
+            search_scale = max(0.000001, min(0.5, search_scale))
 
             search_scale(134:158) = 0.1
             search_scale(232:256) = 0.1
