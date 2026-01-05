@@ -26,7 +26,7 @@ module datatypes
     logical :: do_spruce = .False.    ! set the spruce site handle in 1974 for cutting the vegetation
     logical :: do_sa     = .False.
     logical :: do_annual_mcmc = .True.
-    logical :: do_fixed_param = .True.
+    logical :: do_fixed_param = .False.
     real(8) :: Tref_rh = 10.0
     real(8) :: def_Tpro_me = 10.0
     real(8) :: def_Q10rh, def_Q10pro

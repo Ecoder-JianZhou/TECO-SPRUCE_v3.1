@@ -294,7 +294,7 @@ module mcmc
 
             if(upgraded > 5)then
                 isave = 1
-                if(mod(iDAsimu, 100) == 0) then
+                if(mod(iDAsimu, 4000) == 0) then
                     call mcmc_param_outputs(upgraded, st)
                 endif
                 ! do i = 1,num_step
